@@ -1,2 +1,6 @@
-# CS50PFinal
-Fin al Project for CS50P Course - Simple Tower Defense game using pygame
+# Ancient Mayan Tower Defense
+Simple Tower Defense game using pygame
+
+#### Video Demo:  <URL HERE>
+#### Description:
+TODO
