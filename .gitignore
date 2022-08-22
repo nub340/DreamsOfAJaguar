@@ -1,3 +1,4 @@
-*.tiled-session
 __pycache__/
+*.tiled-session
 *.py[cod]
+*.pyc
