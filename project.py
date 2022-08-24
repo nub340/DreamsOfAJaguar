@@ -41,13 +41,17 @@ class Player(pygame.sprite.Sprite):
         self.attack_hit = False
         self.attack_time = 0
 
-        self.jump_sound = pygame.mixer.Sound('audio/jump.mp3')
+        self.jump_sound = pygame.mixer.Sound('audio/sfx_jump_07-80241.mp3')
         self.jump_sound.set_volume(0.5)
+
+        self.death_sound = pygame.mixer.Sound('audio/gasp-uuh-85993.mp3')
+        self.death_sound.set_volume(0.5)
 
     def player_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] and self.rect.bottom >= GROUND_Y:
             self.gravity = GRAVITY_CONSTANT
+            self.jump_sound.play()
 
         self.attack = keys[pygame.K_SPACE]
 
@@ -195,6 +199,7 @@ class Game():
                     object.kill()
                 else:
                     self.obstacle_group.empty()
+                    player.death_sound.play()
                     return False
             return True
         else: return True
