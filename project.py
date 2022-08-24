@@ -163,7 +163,7 @@ class Game():
         self.bg_sky_offset = 0
 
         # Intro screen
-        self.player_stand = pygame.image.load('graphics/player/v2.standing.spear.png').convert_alpha()
+        self.player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
         self.player_stand = pygame.transform.rotozoom(self.player_stand,0,2)
         self.player_stand_rect = self.player_stand.get_rect(center = (400, 200))
 
