@@ -1,4 +1,5 @@
 import pygame
+from random import randint
 from config import *
 
 class Enemy(pygame.sprite.Sprite):
