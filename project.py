@@ -18,11 +18,21 @@ class Player(pygame.sprite.Sprite):
             pygame.image.load('graphics/player/player_walk_1.png').convert_alpha(), 
             pygame.image.load('graphics/player/player_walk_2.png').convert_alpha()]
         self.player_walk_index = 0
+
+        self.player_crouch = [
+            pygame.image.load('graphics/player/player_crouch.png').convert_alpha(), 
+            pygame.image.load('graphics/player/player_crouch.png').convert_alpha()]
+        self.player_crouch_index = 0
         
         self.player_walk_attack = [
             pygame.image.load('graphics/player/player_attack_1.png').convert_alpha(), 
             pygame.image.load('graphics/player/player_attack_2.png').convert_alpha()]
         self.player_walk_attack_index = 0
+
+        self.player_crouch_attack = [
+            pygame.image.load('graphics/player/player_crouch_attack.png').convert_alpha(), 
+            pygame.image.load('graphics/player/player_crouch_attack.png').convert_alpha()]
+        self.player_crouch_attack_index = 0
 
         self.player_attack_effect = [
             pygame.image.load('graphics/player/attack_effect_1.png').convert_alpha(),
@@ -52,6 +62,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0
         self.velocity = 10
         self.attack = False
+        self.crouch = False
         self.attack_time = 0
         self.rect = self.image.get_rect(midbottom = (80, GROUND_Y))
 
@@ -60,6 +71,10 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_UP] and self.rect.bottom >= GROUND_Y:
             self.gravity = GRAVITY_CONSTANT
             self.jump_sound.play()
+
+        if keys[pygame.K_DOWN] and self.rect.bottom >= GROUND_Y:
+            self.crouch = True
+        else: self.crouch = False
 
         if keys[pygame.K_SPACE]:
             self.attack = True 
@@ -92,18 +107,33 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.player_jump_attack
             else:
                 self.image = self.player_jump
+
+        #arm example question
         else:
             # walking...
             if self.attack:
-                self.player_walk_attack_index += 0.1
-                if self.player_walk_attack_index >= len(self.player_walk_attack): 
-                    self.player_walk_attack_index = 0
-                self.image = self.player_walk_attack[int(self.player_walk_attack_index)]
+                if self.crouch: 
+                    self.player_crouch_attack_index += 0.1
+                    if self.player_crouch_attack_index >= len(self.player_crouch_attack): 
+                        self.player_crouch_attack_index = 0
+                    self.image = self.player_crouch_attack[int(self.player_crouch_attack_index)]
+                else:
+                    self.player_walk_attack_index += 0.1
+                    if self.player_walk_attack_index >= len(self.player_walk_attack): 
+                        self.player_walk_attack_index = 0
+                    self.image = self.player_walk_attack[int(self.player_walk_attack_index)]
             else:
-                self.player_walk_index += 0.1
-                if self.player_walk_index >= len(self.player_walk): 
-                    self.player_walk_index = 0
-                self.image = self.player_walk[int(self.player_walk_index)]
+                if self.crouch:
+                    self.player_crouch_index += 0.1
+                    if self.player_crouch_index >= len(self.player_crouch): 
+                        self.player_crouch_index = 0
+                    self.image = self.player_crouch[int(self.player_crouch_index)]
+                else:
+                    self.player_walk_index += 0.1
+                    if self.player_walk_index >= len(self.player_walk): 
+                        self.player_walk_index = 0
+                    self.image = self.player_walk[int(self.player_walk_index)]
+
 
         now = pygame.time.get_ticks()
         if now - self.attack_time < 100:
