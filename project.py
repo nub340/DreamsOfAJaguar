@@ -76,7 +76,8 @@ class Game():
             for object in colliding:
                 if (player.attack):
                     player.attack_time = pygame.time.get_ticks()
-                    object.kill()
+                    object.kill() 
+                    player.hit_sound.play()
                 else:
                     self.obstacle_group.empty()
                     player.death_sound.play()
