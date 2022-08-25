@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
 
         self.player_crouch = [
             pygame.image.load('graphics/player/player_crouch.png').convert_alpha(), 
-            pygame.image.load('graphics/player/player_crouch.png').convert_alpha()]
+            pygame.image.load('graphics/player/player_crouch_2.png').convert_alpha()]
         self.player_crouch_index = 0
         
         self.player_walk_attack = [
@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
 
         self.player_crouch_attack = [
             pygame.image.load('graphics/player/player_crouch_attack.png').convert_alpha(), 
-            pygame.image.load('graphics/player/player_crouch_attack.png').convert_alpha()]
+            pygame.image.load('graphics/player/player_crouch_attack_2.png').convert_alpha()]
         self.player_crouch_attack_index = 0
 
         self.player_attack_effect = [
