@@ -55,8 +55,13 @@ class Player(pygame.sprite.Sprite):
         self.death_sound.set_volume(0.2)
 
         self.swish_sound = pygame.mixer.Sound('audio/slash-whoosh.mp3')
-        self.swish_sound.set_volume(0.5)
+        self.swish_sound.set_volume(0.2)
         self.swish_sound_start_time = 0
+
+        #hit sound
+        self.hit_sound = pygame.mixer.Sound('audio/slash.mp3')
+        self.hit_sound.set_volume(1)
+        self.hit_sound_start_time = 0
 
     def goto_start_pos(self):
         self.gravity = 0
@@ -244,7 +249,8 @@ class Game():
             for object in colliding:
                 if (player.attack):
                     player.attack_time = pygame.time.get_ticks()
-                    object.kill()
+                    object.kill() 
+                    player.hit_sound.play()
                 else:
                     self.obstacle_group.empty()
                     player.death_sound.play()
