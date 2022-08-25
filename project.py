@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
 from random import randint, choice
+from os.path import exists
 
 GROUND_Y = 340
 GRAVITY_CONSTANT = -20
@@ -12,6 +13,7 @@ PLAYER_VELOCITY = 5
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+
         self.player_walk = [
             pygame.image.load('graphics/player/player_walk_1.png').convert_alpha(), 
             pygame.image.load('graphics/player/player_walk_2.png').convert_alpha()]
@@ -34,18 +36,24 @@ class Player(pygame.sprite.Sprite):
         self.player_jump_attack = pygame.image.load('graphics/player/player_jump_attack.png').convert_alpha()
         
         self.image = self.player_walk[self.player_walk_index]
-        self.rect = self.image.get_rect(midbottom = (80, GROUND_Y))
+        self.goto_start_pos()
+        
+        self.jump_sound = pygame.mixer.Sound('audio/sfx_jump_07-80241.mp3')
+        self.jump_sound.set_volume(0.1)
+
+        self.death_sound = pygame.mixer.Sound('audio/gasp-uuh-85993.mp3')
+        self.death_sound.set_volume(0.2)
+
+        self.swish_sound = pygame.mixer.Sound('audio/slash-whoosh.mp3')
+        self.swish_sound.set_volume(0.5)
+        self.swish_sound_start_time = 0
+
+    def goto_start_pos(self):
         self.gravity = 0
         self.velocity = 10
         self.attack = False
-        self.attack_hit = False
         self.attack_time = 0
-
-        self.jump_sound = pygame.mixer.Sound('audio/sfx_jump_07-80241.mp3')
-        self.jump_sound.set_volume(0.5)
-
-        self.death_sound = pygame.mixer.Sound('audio/gasp-uuh-85993.mp3')
-        self.death_sound.set_volume(0.5)
+        self.rect = self.image.get_rect(midbottom = (80, GROUND_Y))
 
     def player_input(self):
         keys = pygame.key.get_pressed()
@@ -53,7 +61,13 @@ class Player(pygame.sprite.Sprite):
             self.gravity = GRAVITY_CONSTANT
             self.jump_sound.play()
 
-        self.attack = keys[pygame.K_SPACE]
+        if keys[pygame.K_SPACE]:
+            self.attack = True 
+            if (pygame.time.get_ticks() - self.swish_sound_start_time) > (self.swish_sound.get_length() * 1000):
+                self.swish_sound.play()
+                self.swish_sound_start_time = pygame.time.get_ticks()
+        else:
+            self.attack = False
 
         if keys[pygame.K_RIGHT]:
             if self.rect.right + PLAYER_VELOCITY > 800: 
@@ -145,12 +159,16 @@ class Game():
         self.game_font = pygame.font.Font('font/Pixeltype.ttf', 50)
         self.game_active = False
         self.start_time = 0
-        self.score = 0
-        # bg_music = pygame.mixer.Sound('audio/music.wav')
-        # bg_music.play(loops = -1)
+        # pygame.mixer.Sound('audio/music.wav').play(loops = -1)
 
+        self.score = 0
+        self.prev_score = 0
+        if exists('save.txt'):
+            self.prev_score = int(open('save.txt', 'r').readline())
+
+        self.__player__ = Player()
         self.player = pygame.sprite.GroupSingle()
-        self.player.add(Player())
+        self.player.add(self.__player__)
 
         self.obstacle_group = pygame.sprite.Group()
 
@@ -182,7 +200,7 @@ class Game():
         pygame.time.set_timer(self.enemy_timer, 1500)
 
     def display_score(self):
-        current_time = int(pygame.time.get_ticks() / 1000) - self.start_time
+        current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
         self.score_surf = self.game_font.render(f'Score: {current_time}', False, (64, 64, 64))
         self.score_rect = self.score_surf.get_rect(center = (400, 50))
         self.screen.blit(self.score_surf, self.score_rect)
@@ -240,6 +258,11 @@ class Game():
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+500, 0))
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+1000, 0))
 
+    def save_score(self, score):
+        save_file = open('save.txt', 'w')
+        save_file.write(f'{score}')
+        save_file.close()
+
     def run(self):
         wait = False
         while True:
@@ -252,6 +275,11 @@ class Game():
                     if event.type == self.enemy_timer:
                         self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
 
+                    elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                        self.save_score(self.score)
+                        pygame.quit()
+                        exit()
+
                 else:
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                         self.start_time = int(pygame.time.get_ticks() / 1000)
@@ -261,19 +289,17 @@ class Game():
                 self.draw_environment_layers()
                 self.score = self.display_score()
 
-                self.player.draw(self.screen)
-                self.player.update()
-
                 self.obstacle_group.draw(self.screen)
                 self.obstacle_group.update()
+
+                self.player.draw(self.screen)
+                self.player.update()
 
                 self.game_active = self.collision_sprite()
 
             else:
                 self.screen.fill((94, 129, 162))
                 self.screen.blit(self.player_stand, self.player_stand_rect)
-                #self.player_rect.midbottom = (80, GROUND_Y)
-                #self.player.sprites().attack_time = 0
 
                 self.score_message = self.game_font.render(f'Your score: {self.score}', False, (111, 196, 169))
                 self.score_message_rect = self.score_message.get_rect(center = (400, 330))
@@ -281,12 +307,17 @@ class Game():
 
                 if self.score == 0: self.screen.blit(self.game_message,self.start_rect)
                 else: self.screen.blit(self.score_message,self.score_message_rect)
+
+                self.__player__.goto_start_pos()
+                if self.score > 0: 
+                    self.save_score(0)
+                    self.prev_score = 0
                 wait = True
                 
             pygame.display.update()
             self.clock.tick(60)
             if wait:
-                pygame.time.wait(1000)
+                pygame.time.wait(800)
                 wait = False
 
 def main():
