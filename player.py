@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.player_jump_attack = pygame.image.load('graphics/player/player_jump_attack.png').convert_alpha()
         
         self.image = self.player_walk[self.player_walk_index]
-        self.goto_start_pos()
+        self.reset_start_pos()
         
         self.jump_sound = pygame.mixer.Sound('audio/sfx_jump_07-80241.mp3')
         self.jump_sound.set_volume(0.1)
@@ -55,7 +55,7 @@ class Player(pygame.sprite.Sprite):
         self.hit_sound.set_volume(1)
         self.hit_sound_start_time = 0
 
-    def goto_start_pos(self):
+    def reset_start_pos(self):
         self.gravity = 0
         self.velocity = 10
         self.attack = False
