@@ -62,15 +62,6 @@ class Game():
         self.enemy_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.enemy_timer, 1500)
 
-        #Konami
-        self.konomi_index = 0
-        self.konami_code = [
-            pygame.K_UP, pygame.K_UP, 
-            pygame.K_DOWN, pygame.K_DOWN, 
-            pygame.K_LEFT, pygame.K_RIGHT, 
-            pygame.K_LEFT, pygame.K_RIGHT,
-            pygame.K_b, pygame.K_a]
-
     def display_score(self):
         current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
         self.score_surf = self.game_font.render(f'Score: {current_time}', False, (64, 64, 64))
@@ -138,6 +129,14 @@ class Game():
 
     def run(self):
         konomi = 0
+        konomi_index = 0
+        konami_code = [
+            pygame.K_UP, pygame.K_UP, 
+            pygame.K_DOWN, pygame.K_DOWN, 
+            pygame.K_LEFT, pygame.K_RIGHT, 
+            pygame.K_LEFT, pygame.K_RIGHT,
+            pygame.K_b, pygame.K_a]
+        
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -155,14 +154,16 @@ class Game():
 
                 else:
                     if event.type == pygame.KEYDOWN:
-                        if konomi == 0 and event.key == self.konami_code[self.konomi_index]:
-                            self.konomi_index += 1
-                            print(event.key, 'konamicode'[self.konomi_index-1:self.konomi_index])
-                            if self.konomi_index == 10:
-                                konomi = 1
+
+                        if konomi == 0 and event.key == konami_code[konomi_index]:
+                            konomi_index += 1
+                            print('konamicode'[konomi_index-1:konomi_index])
+                            if konomi_index == len(konami_code):
+                                konomi = 10
                                 self.player.sprites()[0].death_sound.play()
+                                konomi_index = 0
                         else:
-                            self.konomi_index = 0
+                            konomi_index = 0
 
                         if event.key == pygame.K_SPACE:
                             self.start_time = int(pygame.time.get_ticks() / 1000)
@@ -179,9 +180,11 @@ class Game():
                 self.player.update()
 
                 self.game_active = self.collision_sprite()
-                if not self.game_active and self.score > 0:
-                    self.save_score(0)
-                    self.prev_score = 0
+                if not self.game_active: 
+                    self.__player__.reset_start_pos()
+                    if self.score > 0:
+                        self.save_score(0)
+                        self.prev_score = 0
 
             else:
                 self.screen.fill((94, 129, 162))
@@ -197,12 +200,12 @@ class Game():
                         self.intro_background_fwd = True
 
                 self.screen.blit(self.intro_background, (self.intro_background_offset, 0))
+                
                 if konomi > 0:
-                    print('Konami activated!')
+                    print('Konami activated!', konomi)
                     player_stand = pygame.transform.rotate(self.player_stand, konomi)
                     self.screen.blit(player_stand, player_stand.get_rect(center = (400, 200)))
-                    self.konomi_index = 0
-                    konomi += 1
+                    konomi += 10
                     if konomi >= 360:
                         konomi = 0
                 else:
@@ -219,8 +222,6 @@ class Game():
                 
                 if self.score == 0: self.screen.blit(self.game_message, self.start_rect)
                 else: self.screen.blit(self.score_message, self.score_message_rect)
-
-                self.__player__.goto_start_pos()
                 
             pygame.display.update()
             self.clock.tick(60)
