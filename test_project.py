@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 from project import Game
 from player import Player
 from enemy import Enemy
-import config
+import config 
 import os
 import pygame
 
@@ -20,7 +20,7 @@ def test_game_init():
     assert game.score == 0
     assert game.start_time == 0
     assert game.game_active == False
-    assert pygame.display.get_caption() == 'Jaguar Run'
+    assert pygame.display.get_caption()[0] == 'Jaguar Run'
     
     player =  game.player.sprites()[0]
     assert player.gravity == 0
