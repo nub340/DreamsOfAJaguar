@@ -1,9 +1,10 @@
 from unittest.mock import MagicMock
-from game import Game
+from project import Game
 from player import Player
 from enemy import Enemy
 import config
 import pygame
+import os
 
 def test_config_defined():
     assert config.SCREEN_WIDTH > 0
@@ -27,5 +28,16 @@ def test_enemy_init():
     assert enemy 
     enemy = Enemy('monkey')
     assert enemy 
+
+def test_save_file():
+    try:
+        game = Game()
+        game.save_score(123, 456, 'test_save.txt')
+        save_file = open('test_save.txt')
+        assert save_file.readline() == '123'
+        assert save_file.readline() == '456'
+    finally:
+        os.remove("test_save.txt")
+
 
 #def konami

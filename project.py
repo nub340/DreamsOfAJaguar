@@ -128,8 +128,8 @@ class Game():
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+500, 0))
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+1000, 0))
 
-    def save_score(self, score, high_score):
-        save_file = open('save.txt', 'w')
+    def save_score(self, score, high_score, file_name = 'save.txt'):
+        save_file = open(file_name, 'w')
         save_file.writelines(list([f'{score}','\n',f'{high_score}']))
         save_file.close()
 
