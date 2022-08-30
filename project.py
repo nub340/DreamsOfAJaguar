@@ -22,8 +22,11 @@ class Game():
 
         self.score = 0
         self.prev_score = 0
+        self.high_score = 0
         if exists('save.txt'):
-            self.prev_score = int(open('save.txt', 'r').readline())
+            file = open('save.txt', 'r')
+            self.prev_score = int(file.readline() or 0)
+            self.high_score = int(file.readline() or 0)
 
         self.__player__ = Player()
         self.player = pygame.sprite.GroupSingle()
@@ -50,13 +53,16 @@ class Game():
 
         self.player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
         self.player_stand = pygame.transform.rotozoom(self.player_stand,0,2)
-        self.player_stand_rect = self.player_stand.get_rect(center = (400, 200))
+        self.player_stand_rect = self.player_stand.get_rect(center = (400, 230))
 
         self.game_name = self.game_font_large.render('Jaguar Run', False, (0, 0, 0))
         self.game_name_rect = self.game_name.get_rect(center = (400, 80))
 
+        self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
+        self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
+
         self.game_message = self.game_font.render('Press space to run', False, (0, 0, 0))
-        self.start_rect = self.game_message.get_rect(center = (400, 330))
+        self.start_rect = self.game_message.get_rect(center = (400, 340))
 
         # Timer
         self.enemy_timer = pygame.USEREVENT + 1
@@ -122,9 +128,10 @@ class Game():
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+500, 0))
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+1000, 0))
 
-    def save_score(self, score):
+    def save_score(self, score, high_score):
         save_file = open('save.txt', 'w')
-        save_file.write(f'{score}')
+        #save_file.write(f'{score}')
+        save_file.writelines(list([f'{score}','\n',f'{high_score}']))
         save_file.close()
 
     def run(self):
@@ -148,7 +155,7 @@ class Game():
                         self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
 
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                        self.save_score(self.score)
+                        self.save_score(self.score, self.high_score)
                         pygame.quit()
                         exit()
 
@@ -183,8 +190,10 @@ class Game():
                 if not self.game_active: 
                     self.__player__.reset_start_pos()
                     if self.score > 0:
-                        self.save_score(0)
                         self.prev_score = 0
+                        if self.score > self.high_score:
+                            self.high_score = self.score
+                    self.save_score(0, self.high_score)
 
             else:
                 self.screen.fill((94, 129, 162))
@@ -200,25 +209,29 @@ class Game():
                         self.intro_background_fwd = True
 
                 self.screen.blit(self.intro_background, (self.intro_background_offset, 0))
+                self.screen.blit(self.game_name, self.game_name_rect)
                 
+                self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
+                self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
+                self.screen.blit(self.high_score_msg, self.high_score_rect)
+
                 if konomi > 0:
                     print('Konami activated!', konomi)
                     player_stand = pygame.transform.rotate(self.player_stand, konomi)
-                    self.screen.blit(player_stand, player_stand.get_rect(center = (400, 200)))
+                    self.screen.blit(player_stand, player_stand.get_rect(center = (400, 250)))
                     konomi += 10
                     if konomi >= 360:
                         konomi = 0
                 else:
                     self.screen.blit(self.player_stand, self.player_stand_rect)
 
-                self.score_message = self.game_font.render(f'Your score: {self.score}', False, (255, 255, 255))
-                self.score_message_rect = self.score_message.get_rect(center = (400, 330))
-                self.screen.blit(self.game_name,self.game_name_rect)
+                self.score_message = self.game_font.render(f'Your score: {self.score}', False, (0, 0, 0))
+                self.score_message_rect = self.score_message.get_rect(center = (400, 340))
 
                 if self.prev_score > 0: game_message = 'Press space to continue...'
                 else: game_message = 'Press space to run' 
                 self.game_message = self.game_font.render(game_message, False, (0, 0, 0))
-                self.start_rect = self.game_message.get_rect(center = (400, 330))
+                self.start_rect = self.game_message.get_rect(center = (400, 350))
                 
                 if self.score == 0: self.screen.blit(self.game_message, self.start_rect)
                 else: self.screen.blit(self.score_message, self.score_message_rect)
