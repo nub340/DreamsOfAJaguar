@@ -34,10 +34,8 @@ def test_save_file():
         game = Game()
         game.save_score(123, 456, 'test_save.txt')
         save_file = open('test_save.txt')
-        assert save_file.readline() == '123'
+        assert save_file.readline() == '123\n'
         assert save_file.readline() == '456'
     finally:
+        save_file.close()
         os.remove("test_save.txt")
-
-
-#def konami
