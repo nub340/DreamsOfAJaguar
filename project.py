@@ -130,7 +130,6 @@ class Game():
 
     def save_score(self, score, high_score):
         save_file = open('save.txt', 'w')
-        #save_file.write(f'{score}')
         save_file.writelines(list([f'{score}','\n',f'{high_score}']))
         save_file.close()
 
