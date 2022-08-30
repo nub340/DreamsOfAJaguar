@@ -3,8 +3,8 @@ from project import Game
 from player import Player
 from enemy import Enemy
 import config
-import pygame
 import os
+import pygame
 
 def test_config_defined():
     assert config.SCREEN_WIDTH > 0
@@ -18,6 +18,16 @@ def test_game_init():
     game = Game()
     assert game
     assert game.score == 0
+    assert game.start_time == 0
+    assert game.game_active == False
+    assert pygame.display.get_caption() == 'Jaguar Run'
+    
+    player =  game.player.sprites()[0]
+    assert player.gravity == 0
+    assert player.velocity == 10
+    assert player.attack == False
+    assert player.crouch == False
+    assert player.attack_time == 0
 
 def test_player_init():
     player = Player()
@@ -38,6 +48,3 @@ def test_save_file():
         assert save_file.readline() == '456'
     finally:
         os.remove("test_save.txt")
-
-
-#def konami
