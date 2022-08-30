@@ -17,7 +17,7 @@ class Game():
         self.game_font = pygame.font.Font('font/Pixeltype.ttf', 50)
         self.game_active = False
         self.start_time = 0
-        # pygame.mixer.Sound('audio/music.wav').play(loops = -1)
+        pygame.mixer.Sound('audio/legend-of-narmer.mp3').play(loops = -1)
 
         self.score = 0
         self.prev_score = 0
