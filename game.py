@@ -1,3 +1,12 @@
+import pygame
+from sys import exit
+from random import choice
+from os.path import exists
+from config import * 
+
+from player import Player
+from enemy import Enemy
+
 class Game():
     def __init__(self):
         pygame.init()
@@ -9,12 +18,15 @@ class Game():
         self.game_font = pygame.font.Font('font/Pixeltype.ttf', 50)
         self.game_active = False
         self.start_time = 0
-        # pygame.mixer.Sound('audio/music.wav').play(loops = -1)
+        pygame.mixer.Sound('audio/legend-of-narmer.mp3').play(loops = -1)
 
         self.score = 0
         self.prev_score = 0
+        self.high_score = 0
         if exists('save.txt'):
-            self.prev_score = int(open('save.txt', 'r').readline())
+            file = open('save.txt', 'r')
+            self.prev_score = int(file.readline() or 0)
+            self.high_score = int(file.readline() or 0)
 
         self.__player__ = Player()
         self.player = pygame.sprite.GroupSingle()
@@ -41,26 +53,20 @@ class Game():
 
         self.player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
         self.player_stand = pygame.transform.rotozoom(self.player_stand,0,2)
-        self.player_stand_rect = self.player_stand.get_rect(center = (400, 200))
+        self.player_stand_rect = self.player_stand.get_rect(center = (400, 230))
 
         self.game_name = self.game_font_large.render('Jaguar Run', False, (0, 0, 0))
         self.game_name_rect = self.game_name.get_rect(center = (400, 80))
 
+        self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
+        self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
+
         self.game_message = self.game_font.render('Press space to run', False, (0, 0, 0))
-        self.start_rect = self.game_message.get_rect(center = (400, 330))
+        self.start_rect = self.game_message.get_rect(center = (400, 340))
 
         # Timer
         self.enemy_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.enemy_timer, 1500)
-
-        #Konami
-        self.konomi_index = 0
-        self.konami_code = [
-            pygame.K_UP, pygame.K_UP, 
-            pygame.K_DOWN, pygame.K_DOWN, 
-            pygame.K_LEFT, pygame.K_RIGHT, 
-            pygame.K_LEFT, pygame.K_RIGHT,
-            pygame.K_b, pygame.K_a]
 
     def display_score(self):
         current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
@@ -122,13 +128,21 @@ class Game():
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+500, 0))
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+1000, 0))
 
-    def save_score(self, score):
-        save_file = open('save.txt', 'w')
-        save_file.write(f'{score}')
+    def save_score(self, score, high_score, file_name = 'save.txt'):
+        save_file = open(file_name, 'w')
+        save_file.writelines(list([f'{score}','\n',f'{high_score}']))
         save_file.close()
 
     def run(self):
         konomi = 0
+        konomi_index = 0
+        konami_code = [
+            pygame.K_UP, pygame.K_UP, 
+            pygame.K_DOWN, pygame.K_DOWN, 
+            pygame.K_LEFT, pygame.K_RIGHT, 
+            pygame.K_LEFT, pygame.K_RIGHT,
+            pygame.K_b, pygame.K_a]
+        
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -140,20 +154,22 @@ class Game():
                         self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
 
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                        self.save_score(self.score)
+                        self.save_score(self.score, self.high_score)
                         pygame.quit()
                         exit()
 
                 else:
                     if event.type == pygame.KEYDOWN:
-                        if konomi == 0 and event.key == self.konami_code[self.konomi_index]:
-                            self.konomi_index += 1
-                            print(event.key, 'konamicode'[self.konomi_index-1:self.konomi_index])
-                            if self.konomi_index == 10:
-                                konomi = 1
+
+                        if konomi == 0 and event.key == konami_code[konomi_index]:
+                            konomi_index += 1
+                            print('konamicode'[konomi_index-1:konomi_index])
+                            if konomi_index == len(konami_code):
+                                konomi = 10
                                 self.player.sprites()[0].death_sound.play()
+                                konomi_index = 0
                         else:
-                            self.konomi_index = 0
+                            konomi_index = 0
 
                         if event.key == pygame.K_SPACE:
                             self.start_time = int(pygame.time.get_ticks() / 1000)
@@ -170,9 +186,13 @@ class Game():
                 self.player.update()
 
                 self.game_active = self.collision_sprite()
-                if not self.game_active and self.score > 0:
-                    self.save_score(0)
-                    self.prev_score = 0
+                if not self.game_active: 
+                    self.__player__.reset_start_pos()
+                    if self.score > 0:
+                        self.prev_score = 0
+                        if self.score > self.high_score:
+                            self.high_score = self.score
+                    self.save_score(0, self.high_score)
 
             else:
                 self.screen.fill((94, 129, 162))
@@ -188,30 +208,32 @@ class Game():
                         self.intro_background_fwd = True
 
                 self.screen.blit(self.intro_background, (self.intro_background_offset, 0))
+                self.screen.blit(self.game_name, self.game_name_rect)
+                
+                self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
+                self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
+                self.screen.blit(self.high_score_msg, self.high_score_rect)
+
                 if konomi > 0:
-                    print('Konami activated!')
+                    print('Konami activated!', konomi)
                     player_stand = pygame.transform.rotate(self.player_stand, konomi)
-                    self.screen.blit(player_stand, player_stand.get_rect(center = (400, 200)))
-                    self.konomi_index = 0
-                    konomi += 1
+                    self.screen.blit(player_stand, player_stand.get_rect(center = (400, 250)))
+                    konomi += 10
                     if konomi >= 360:
                         konomi = 0
                 else:
                     self.screen.blit(self.player_stand, self.player_stand_rect)
 
-                self.score_message = self.game_font.render(f'Your score: {self.score}', False, (255, 255, 255))
-                self.score_message_rect = self.score_message.get_rect(center = (400, 330))
-                self.screen.blit(self.game_name,self.game_name_rect)
+                self.score_message = self.game_font.render(f'Your score: {self.score}', False, (0, 0, 0))
+                self.score_message_rect = self.score_message.get_rect(center = (400, 340))
 
                 if self.prev_score > 0: game_message = 'Press space to continue...'
                 else: game_message = 'Press space to run' 
                 self.game_message = self.game_font.render(game_message, False, (0, 0, 0))
-                self.start_rect = self.game_message.get_rect(center = (400, 330))
+                self.start_rect = self.game_message.get_rect(center = (400, 350))
                 
                 if self.score == 0: self.screen.blit(self.game_message, self.start_rect)
                 else: self.screen.blit(self.score_message, self.score_message_rect)
-
-                self.__player__.goto_start_pos()
                 
             pygame.display.update()
             self.clock.tick(60)
