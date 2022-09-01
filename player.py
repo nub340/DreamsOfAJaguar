@@ -32,7 +32,6 @@ class Player(pygame.sprite.Sprite):
             pygame.image.load('graphics/player/attack_effect_3.png').convert_alpha(),
             pygame.image.load('graphics/player/attack_effect_4.png').convert_alpha()
         ]
-        self.player_attack_effect_index = 0
         
         self.player_jump = pygame.image.load('graphics/player/player_jump.png').convert_alpha()
         self.player_jump_attack = pygame.image.load('graphics/player/player_jump_attack.png').convert_alpha()
