@@ -1,6 +1,6 @@
 from PIL import Image, ImageOps
 
-img = Image.open("graphics/imported_units/bird.1.2.png")
+img = Image.open("graphics/imported_units/bird.1.3.png")
 img = img.convert("RGBA")
 datas = img.getdata()
 
@@ -12,5 +12,7 @@ for item in datas:
         newData.append(item)
 
 img.putdata(newData)
-img.save("graphics/imported_units/result2.png", "PNG")
+newsize = (128, 128)
+img = img.resize(newsize)
+img.save("graphics/imported_units/result4.png", "PNG")
 
