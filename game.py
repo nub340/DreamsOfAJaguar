@@ -6,6 +6,7 @@ from config import *
 
 from player import Player
 from enemy import Enemy
+from import_units import list_imported_units, ImportedUnit
 
 class Game():
     def __init__(self):
@@ -133,7 +134,7 @@ class Game():
         save_file.writelines(list([f'{score}','\n',f'{high_score}']))
         save_file.close()
 
-    def run(self):
+    def run(self, dream):
         konomi = 0
         konomi_index = 0
         konami_code = [
@@ -151,7 +152,11 @@ class Game():
 
                 if self.game_active:
                     if event.type == self.enemy_timer:
-                        self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
+                        if dream:
+                            imported_units = list_imported_units()
+                            self.obstacle_group.add(ImportedUnit('air', choice(imported_units)))
+                        else:
+                            self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
 
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                         self.save_score(self.score, self.high_score)
