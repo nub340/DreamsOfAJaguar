@@ -62,4 +62,4 @@ class ImportedUnit(pygame.sprite.Sprite):
 if __name__ == '__main__':
     file_path = argv[1]
     process_image(file_path)
-    process_image("graphics/imported_units/bird.1.3.png")
+    #process_image("graphics/imported_units/bird.1.3.png")
