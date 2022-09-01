@@ -1,0 +1,7 @@
+__pycache__/
+*.tiled-session
+*.py[cod]
+*.pyc
+.DS_Store
+.pytest_cache
+save.txt
