@@ -6,7 +6,8 @@ from config import *
 
 from player import Player
 from enemy import Enemy
-from import_units import list_imported_units, ImportedUnit
+from unit_4_frames import Unit4Frames
+from import_units import get_imported_units_list
 
 class Game():
     def __init__(self):
@@ -153,8 +154,8 @@ class Game():
                 if self.game_active:
                     if event.type == self.enemy_timer:
                         if dream:
-                            imported_units = list_imported_units()
-                            self.obstacle_group.add(ImportedUnit('air', choice(imported_units)))
+                            imported_units = get_imported_units_list('air')
+                            self.obstacle_group.add(Unit4Frames('air', choice(imported_units)))
                         else:
                             self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
 

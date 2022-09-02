@@ -5,4 +5,5 @@ __pycache__/
 .DS_Store
 .pytest_cache
 save.txt
-imported_units_ready
+import_units
+graphics/units/**/*.png

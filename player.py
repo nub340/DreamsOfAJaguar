@@ -124,6 +124,7 @@ class Player(pygame.sprite.Sprite):
                     if self.player_crouch_index >= len(self.player_crouch): 
                         self.player_crouch_index = 0
                     self.image = self.player_crouch[int(self.player_crouch_index)]
+                    self.rect = self.image.get_rect(midbottom = (80, GROUND_Y))
                 else:
                     self.player_walk_index += 0.1
                     if self.player_walk_index >= len(self.player_walk): 
