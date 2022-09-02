@@ -6,4 +6,3 @@ __pycache__/
 .pytest_cache
 save.txt
 import_units/**/*.png
-graphics/units/**/*.png
