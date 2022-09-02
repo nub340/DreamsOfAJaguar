@@ -8,7 +8,7 @@ def get_imported_units_list(type='air'):
     dir = f'graphics/units/{type}/'
     return list(map(lambda p: dir + p, os.listdir(dir)))
 
-def extract_thumnail(img, frame):
+def extract_frame(img, frame):
     w, h = img.size
     half_w = int(w/2)
     half_h = int(h/2)
@@ -30,33 +30,35 @@ def extract_thumnail(img, frame):
     return img_out
 
 def process_image(type='air', image_path = None):
+    # build a list of images to process
     queue = []
     if image_path:
         queue = [image_path]
     else:
         queue = list(map(lambda p: f'import_units/{type}/' + p, os.listdir(f'import_units/{type}/')))
 
-    #convert background to alpha
+    # process each image in the list...
     for image_path in queue:
         img = Image.open(image_path)
         img = img.convert("RGBA")
-        datas = img.getdata()
 
+        # convert the background to alpha 
+        datas = img.getdata()
         newData = []
         for item in datas:
             if (item[0] >= 240 and item[1] >= 240 and item[2] >= 240):
                 newData.append((255, 255, 255, 0))
             else:
                 newData.append(item)
-
         img.putdata(newData)
         
-        #extract the 4 framesfrom the image
-        frame1 = extract_thumnail(img, 1)
-        frame2 = extract_thumnail(img, 2)
-        frame3 = extract_thumnail(img, 3)
-        frame4 = extract_thumnail(img, 4)
+        # extract and normalize each of the 4 frames from the source image
+        frame1 = extract_frame(img, 1)
+        frame2 = extract_frame(img, 2)
+        frame3 = extract_frame(img, 3)
+        frame4 = extract_frame(img, 4)
 
+        # combine the 4 frames back into a single image in a format suitable for the game to use
         image_out = Image.new(mode="RGBA", size=(128, 128))
         image_out.paste(frame1, (0,0))
         image_out.paste(frame2, (64,0))
