@@ -12,14 +12,14 @@ def extract_thumnail(img, frame):
     w, h = img.size
     half_w = int(w/2)
     half_h = int(h/2)
-    frames = [
+    frame_boxes = [
         (0, 0, half_w, half_h),
         (half_w, 0, w, half_h),
         (0, half_h, half_w, h),
         (half_w, half_h, w, h)]
     
     tile_size = (half_w, half_h)
-    img_frame = img.crop(frames[frame-1])
+    img_frame = img.crop(frame_boxes[frame-1])
     frame_box = img_frame.getbbox()
     img_frame = img_frame.crop(frame_box)
     img_out = Image.new(mode="RGBA", size=tile_size)
