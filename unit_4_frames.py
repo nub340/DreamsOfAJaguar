@@ -10,16 +10,16 @@ class Unit4Frames(pygame.sprite.Sprite):
         self.animation_index = 0
         self.source_image = pygame.image.load(image_path).convert_alpha()
         self.frames = [
-            self.source_image.subsurface((0, 0, 64, 64)),
-            self.source_image.subsurface((64, 0, 64, 64)),
-            self.source_image.subsurface((0, 64, 64, 64)),
-            self.source_image.subsurface((64, 64, 64, 64))]
+            pygame.transform.scale(self.source_image.subsurface((0, 0, 64, 64)), (96, 96)),
+            pygame.transform.scale(self.source_image.subsurface((64, 0, 64, 64)), (96, 96)),
+            pygame.transform.scale(self.source_image.subsurface((0, 64, 64, 64)), (96, 96)),
+            pygame.transform.scale(self.source_image.subsurface((64, 64, 64, 64)), (96, 96))]
         self.image = self.frames[self.animation_index]
 
         if type == 'air':
-            self.rect = self.image.get_rect(midbottom = (randint(900, 1100), randint(210, 280)))
+            self.rect = self.image.get_rect(midbottom = (randint(900, 1100), randint(200, 270)))
         else:
-            self.rect = self.image.get_rect(midbottom = (randint(900, 1100), GROUND_Y))
+            self.rect = self.image.get_rect(midbottom = (randint(900, 1100), GROUND_Y+35))
 
     def animate(self):
         self.animation_index += 0.1
