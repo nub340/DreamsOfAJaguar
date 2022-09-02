@@ -8,6 +8,27 @@ def get_imported_units_list(type='air'):
     dir = f'graphics/units/{type}/'
     return list(map(lambda p: dir + p, os.listdir(dir)))
 
+def extract_thumnail(img, frame):
+    w, h = img.size
+    half_w = int(w/2)
+    half_h = int(h/2)
+    frames = [
+        (0, 0, half_w, half_h),
+        (half_w, 0, w, half_h),
+        (0, half_h, half_w, h),
+        (half_w, half_h, w, h)]
+    
+    tile_size = (half_w, half_h)
+    img_frame = img.crop(frames[frame-1])
+    frame_box = img_frame.getbbox()
+    img_frame = img_frame.crop(frame_box)
+    img_out = Image.new(mode="RGBA", size=tile_size)
+    img_out.paste(img_frame, (
+        int((tile_size[0]-img_frame.size[0])/2), 
+        int((tile_size[1]-img_frame.size[1])/2)))
+    img_out.thumbnail((64, 64), Image.ANTIALIAS)
+    return img_out
+
 def process_image(type='air', image_path = None):
     queue = []
     if image_path:
@@ -30,50 +51,18 @@ def process_image(type='air', image_path = None):
 
         img.putdata(newData)
         
-        #split image into 4 images
-        w , h = img.size
-        tile_size = (int(w/2), int(h/2))
-
-        img1 = img.crop((0, 0, w/2, h/2))
-        img1box = img1.getbbox()
-        img1 = img1.crop(img1box)
-        img1a = Image.new(mode="RGBA", size=tile_size)
-        img1a.paste(img1, (int((tile_size[0]-img1.size[0])/2), int((tile_size[1]-img1.size[1])/2)))
-        img1a = img1a.resize((64, 64))
-        
-        img2 = img.crop((w/2, 0, w, h/2))
-        img2box = img2.getbbox()
-        img2 = img2.crop(img2box)
-        img2a = Image.new(mode="RGBA", size=tile_size)
-        img2a.paste(img2, (int((tile_size[0]-img2.size[0])/2), int((tile_size[1]-img2.size[1])/2)))
-        img2a = img2a.resize((64, 64))
-
-        img3 = img.crop(( 0, h/2, w/2, h))
-        img3box = img3.getbbox()
-        img3 = img3.crop(img3box)
-        img3a = Image.new(mode="RGBA", size=tile_size)
-        img3a.paste(img3, (int((tile_size[0]-img3.size[0])/2), int((tile_size[1]-img3.size[1])/2)))
-        img3a = img3a.resize((64, 64))
-
-        img4 = img.crop(( w/2, h/2, w, h))
-        img4box = img4.getbbox()
-        img4 = img4.crop(img4box)
-        img4a = Image.new(mode="RGBA", size=tile_size)
-        img4a.paste(img4, (int((tile_size[0]-img4.size[0])/2), int((tile_size[1]-img4.size[1])/2)))
-        img4a = img4a.resize((64, 64))
+        #extract the 4 framesfrom the image
+        frame1 = extract_thumnail(img, 1)
+        frame2 = extract_thumnail(img, 2)
+        frame3 = extract_thumnail(img, 3)
+        frame4 = extract_thumnail(img, 4)
 
         image_out = Image.new(mode="RGBA", size=(128, 128))
-        image_out.paste(img1a, (0,0))
-        image_out.paste(img2a, (64,0))
-        image_out.paste(img3a, (0,64))
-        image_out.paste(img4a, (64,64))
+        image_out.paste(frame1, (0,0))
+        image_out.paste(frame2, (64,0))
+        image_out.paste(frame3, (0,64))
+        image_out.paste(frame4, (64,64))
         image_out.save(f'graphics/units/{type}/{uuid.uuid4()}.png', "PNG")
-
-        #re-size image
-        #newsize = (128, 128)
-        #img = img.resize(newsize)
-        #img.save(f'graphics/units/{type}/{uuid.uuid4()}.png', "PNG")
-        #img.save(f'graphics/units/test.png', "PNG")
 
 if __name__ == '__main__':
     if len(argv) == 3:
