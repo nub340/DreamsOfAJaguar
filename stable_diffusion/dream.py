@@ -51,10 +51,12 @@ def preview_generated_unit(type):
 def generate_unit_url(type):
     if type == 'air': 
         prompt = STABLE_DIFFUSION_PROMPT_AIR 
-        image = 'stable_diffusion/img2img/bird.png'
+        init_image = 'stable_diffusion/img2img/bird2.png'
+        mask = 'stable_diffusion/img2img/bird2mask.png'
     else: 
         prompt = STABLE_DIFFUSION_PROMPT_GROUND
-        image = 'stable_diffusion/img2img/jag.png'
+        init_image = 'stable_diffusion/img2img/jag.png'
+        mask = 'stable_diffusion/img2img/jagmask.png'
     
     attempts = 0
     while attempts < 3:
@@ -66,8 +68,8 @@ def generate_unit_url(type):
                 prompt_strength=STABLE_DIFFUSION_PSTRENGTH,
                 num_inference_steps=STABLE_DIFFUSION_ISTEPS,
                 guidance_scale=STABLE_DIFFUSION_GSCALE,
-                init_image=open(image, "rb")
-                mask=open(image, "rb"))
+                init_image=open(init_image, "rb"),
+                mask=open(mask, "rb"))
 
             attempts = 3
 
