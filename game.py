@@ -154,7 +154,7 @@ class Game():
                 if self.game_active:
                     if event.type == self.enemy_timer:
                         if dream:
-                            type = choice(['air', 'ground', 'ground', 'ground'])
+                            type = choice(['air', 'ground'])
                             imported_units = get_imported_units_list(type)
                             self.obstacle_group.add(Unit4Frames(type, choice(imported_units)))
                         else:
