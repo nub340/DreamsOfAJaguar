@@ -66,7 +66,8 @@ def generate_unit_url(type):
                 prompt_strength=STABLE_DIFFUSION_PSTRENGTH,
                 num_inference_steps=STABLE_DIFFUSION_ISTEPS,
                 guidance_scale=STABLE_DIFFUSION_GSCALE,
-                init_image=open(image, "rb"))
+                init_image=open(image, "rb")
+                mask=open(image, "rb"))
 
             attempts = 3
 
