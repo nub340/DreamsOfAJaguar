@@ -10,17 +10,13 @@ from import_units import process_all_images
 
 # CONFIG ====================
 STABLE_DIFFUSION_PROMPT_GROUND = "facing left , Saber-toothed cat , detailed drawing , 32bit video game , cat walking cycle animation sheet"
-<<<<<<< HEAD
 STABLE_DIFFUSION_PROMPT_AIR = "facing left , eagle bird condor hawk owl , 32bit video game , flying animation sheet"
-=======
-STABLE_DIFFUSION_PROMPT_AIR = "facing left , eagle bird condor hawk owl , flying animation sheet"
 STABLE_DIFFUSION_WIDTH=512
 STABLE_DIFFUSION_HEIGHT=512
 STABLE_DIFFUSION_PSTRENGTH=0.8
 STABLE_DIFFUSION_ISTEPS=50
 STABLE_DIFFUSION_GSCALE=7.5
 # ===========================
->>>>>>> b7d09b93a415a7f34b3ed1dbacd3eb7e28781c76
 
 model = replicate.models.get("stability-ai/stable-diffusion")
 
