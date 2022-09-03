@@ -9,7 +9,7 @@ sys.path.append(os.path.realpath('../'))
 from import_units import process_all_images
 
 STABLE_DIFFUSION_PROMPT_GROUND = "facing left , Saber-toothed cat , detailed drawing , 32bit video game , cat walking cycle animation sheet"
-STABLE_DIFFUSION_PROMPT_AIR = "facing left , eagle bird condor hawk owl , flying animation sheet"
+STABLE_DIFFUSION_PROMPT_AIR = "facing left , eagle bird condor hawk owl , 32bit video game , flying animation sheet"
 
 model = replicate.models.get("stability-ai/stable-diffusion")
 
