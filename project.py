@@ -9,7 +9,7 @@ def main(dream):
         refresh_units()
 
     game = Game()
-    game.run(dream)
+    game.run()
 
 if __name__ == '__main__':
     if len(argv) > 1 and (argv[1] == '--dream' or argv[1] == '-d'):

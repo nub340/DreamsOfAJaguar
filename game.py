@@ -8,6 +8,7 @@ from player import Player
 from enemy import Enemy
 from unit_4_frames import Unit4Frames
 from import_units import get_imported_units_list
+import os
 
 class Game():
     def __init__(self):
@@ -135,7 +136,7 @@ class Game():
         save_file.writelines(list([f'{score}','\n',f'{high_score}']))
         save_file.close()
 
-    def run(self, dream):
+    def run(self):
         konomi = 0
         konomi_index = 0
         konami_code = [
@@ -145,6 +146,10 @@ class Game():
             pygame.K_LEFT, pygame.K_RIGHT,
             pygame.K_b, pygame.K_a]
         
+        units = {
+            'air': get_imported_units_list('air'), 
+            'ground': get_imported_units_list('ground')
+        }
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -153,9 +158,12 @@ class Game():
 
                 if self.game_active:
                     if event.type == self.enemy_timer:
-                        if dream:
-                            type = choice(['air', 'ground'])
-                            imported_units = get_imported_units_list(type)
+                        unit_types = []
+                        if units['air']: unit_types.append('air')
+                        if units['ground']: unit_types.append('ground')
+                        if unit_types:
+                            type = choice(unit_types)
+                            imported_units = units[type]
                             self.obstacle_group.add(Unit4Frames(type, choice(imported_units)))
                         else:
                             self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
