@@ -1,0 +1,2 @@
+STABLE_DIFFUSION_PROMPT_GROUND = "mayan style , spotted black jaguar , 64bit video game , cat walking cycle animation sheet"
+STABLE_DIFFUSION_PROMPT_AIR = "mayan style , flying eagles , 32bit video game , flying cycle animation sheet"

@@ -66,6 +66,10 @@ def process_image(type='air', image_path = None):
         image_out.paste(frame4, (64,64))
         image_out.save(f'graphics/units/{type}/{uuid.uuid4()}.png', "PNG")
 
+def process_all_images():
+    process_image('air')
+    process_image('ground')
+
 if __name__ == '__main__':
     if len(argv) == 3:
         type = argv[1]

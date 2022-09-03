@@ -1,7 +1,13 @@
 from game import Game
 from sys import argv
 
+from stable_diffusion.dream import refresh_units
+
 def main(dream):
+    
+    if dream:
+        refresh_units()
+
     game = Game()
     game.run(dream)
 
