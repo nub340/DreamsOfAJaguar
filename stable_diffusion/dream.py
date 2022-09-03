@@ -8,8 +8,15 @@ import os
 sys.path.append(os.path.realpath('../'))
 from import_units import process_all_images
 
+# CONFIG ====================
 STABLE_DIFFUSION_PROMPT_GROUND = "facing left , Saber-toothed cat , detailed drawing , 32bit video game , cat walking cycle animation sheet"
 STABLE_DIFFUSION_PROMPT_AIR = "facing left , eagle bird condor hawk owl , flying animation sheet"
+STABLE_DIFFUSION_WIDTH=512
+STABLE_DIFFUSION_HEIGHT=512
+STABLE_DIFFUSION_PSTRENGTH=0.8
+STABLE_DIFFUSION_ISTEPS=50
+STABLE_DIFFUSION_GSCALE=7.5
+# ===========================
 
 model = replicate.models.get("stability-ai/stable-diffusion")
 
@@ -54,11 +61,11 @@ def generate_unit_url(type):
         try:
             output = model.predict(
                 prompt=prompt,
-                width=512,
-                height=512,
-                prompt_strength=0.8,
-                num_inference_steps=50,
-                guidance_scale=7.5,
+                width=STABLE_DIFFUSION_WIDTH,
+                height=STABLE_DIFFUSION_HEIGHT,
+                prompt_strength=STABLE_DIFFUSION_PSTRENGTH,
+                num_inference_steps=STABLE_DIFFUSION_ISTEPS,
+                guidance_scale=STABLE_DIFFUSION_GSCALE,
                 init_image=open(image, "rb"))
 
             attempts = 3
