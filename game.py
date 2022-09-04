@@ -8,6 +8,7 @@ from player import Player
 from enemy import Enemy
 from unit_4_frames import Unit4Frames
 from import_units import get_imported_units_list
+from main_screen import MainScreen
 import os
 
 class Game():
@@ -50,22 +51,24 @@ class Game():
         self.bg_sky_offset = 0
 
         # Intro screen
-        self.intro_background = pygame.image.load('graphics/map2.png').convert_alpha()
-        self.intro_background_offset = 0
-        self.intro_background_fwd = True
+        self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large)
 
-        self.player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
-        self.player_stand = pygame.transform.rotozoom(self.player_stand,0,2)
-        self.player_stand_rect = self.player_stand.get_rect(center = (400, 230))
+        # self.intro_background = pygame.image.load('graphics/map2.png').convert_alpha()
+        # self.intro_background_offset = 0
+        # self.intro_background_fwd = True
 
-        self.game_name = self.game_font_large.render('Jaguar Run', False, (0, 0, 0))
-        self.game_name_rect = self.game_name.get_rect(center = (400, 80))
+        # self.player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
+        # self.player_stand = pygame.transform.rotozoom(self.player_stand,0,2)
+        # self.player_stand_rect = self.player_stand.get_rect(center = (400, 230))
 
-        self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
-        self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
+        # self.game_name = self.game_font_large.render('Jaguar Run', False, (0, 0, 0))
+        # self.game_name_rect = self.game_name.get_rect(center = (400, 80))
 
-        self.game_message = self.game_font.render('Press space to run', False, (0, 0, 0))
-        self.start_rect = self.game_message.get_rect(center = (400, 340))
+        # self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
+        # self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
+
+        # self.game_message = self.game_font.render('Press space to run', False, (0, 0, 0))
+        # self.start_rect = self.game_message.get_rect(center = (400, 340))
 
         # Timer
         self.enemy_timer = pygame.USEREVENT + 1
@@ -137,8 +140,8 @@ class Game():
         save_file.close()
 
     def run(self):
-        konomi = 0
-        konomi_index = 0
+        konami = 0
+        konami_index = 0
         konami_code = [
             pygame.K_UP, pygame.K_UP, 
             pygame.K_DOWN, pygame.K_DOWN, 
@@ -176,15 +179,15 @@ class Game():
                 else:
                     if event.type == pygame.KEYDOWN:
 
-                        if konomi == 0 and event.key == konami_code[konomi_index]:
-                            konomi_index += 1
-                            print('konamicode'[konomi_index-1:konomi_index])
-                            if konomi_index == len(konami_code):
-                                konomi = 10
+                        if konami == 0 and event.key == konami_code[konami_index]:
+                            konami_index += 1
+                            print('konamicode'[konami_index-1:konami_index])
+                            if konami_index == len(konami_code):
+                                konami = 10
                                 self.player.sprites()[0].death_sound.play()
-                                konomi_index = 0
+                                konami_index = 0
                         else:
-                            konomi_index = 0
+                            konami_index = 0
 
                         if event.key == pygame.K_SPACE:
                             self.start_time = int(pygame.time.get_ticks() / 1000)
@@ -210,45 +213,7 @@ class Game():
                     self.save_score(0, self.high_score)
 
             else:
-                self.screen.fill((94, 129, 162))
-                if self.intro_background_fwd:
-                    if self.intro_background_offset < -1000:
-                        self.intro_background_fwd = False
-                    else:
-                        self.intro_background_offset -= 1
-                else: 
-                    if self.intro_background_offset < 0:
-                        self.intro_background_offset += 1
-                    else:
-                        self.intro_background_fwd = True
-
-                self.screen.blit(self.intro_background, (self.intro_background_offset, 0))
-                self.screen.blit(self.game_name, self.game_name_rect)
-                
-                self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
-                self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
-                self.screen.blit(self.high_score_msg, self.high_score_rect)
-
-                if konomi > 0:
-                    print('Konami activated!', konomi)
-                    player_stand = pygame.transform.rotate(self.player_stand, konomi)
-                    self.screen.blit(player_stand, player_stand.get_rect(center = (400, 250)))
-                    konomi += 10
-                    if konomi >= 360:
-                        konomi = 0
-                else:
-                    self.screen.blit(self.player_stand, self.player_stand_rect)
-
-                self.score_message = self.game_font.render(f'Your score: {self.score}', False, (0, 0, 0))
-                self.score_message_rect = self.score_message.get_rect(center = (400, 340))
-
-                if self.prev_score > 0: game_message = 'Press space to continue...'
-                else: game_message = 'Press space to run' 
-                self.game_message = self.game_font.render(game_message, False, (0, 0, 0))
-                self.start_rect = self.game_message.get_rect(center = (400, 350))
-                
-                if self.score == 0: self.screen.blit(self.game_message, self.start_rect)
-                else: self.screen.blit(self.score_message, self.score_message_rect)
+                self.main_screen.draw(self.prev_score, self.score, self.high_score, konami)
                 
             pygame.display.update()
             self.clock.tick(60)
