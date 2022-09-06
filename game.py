@@ -6,8 +6,8 @@ from config import *
 
 from player import Player
 from enemy import Enemy
-from unit_4_frames import Unit4Frames
-from unit_factory import get_units
+from ai_unit import AIUnit
+from ai_unit_import import get_units
 from main_screen import MainScreen
 import os
 
@@ -168,7 +168,7 @@ class Game():
                             type = choice(unit_types)
                             imported_units = units[type]
                             self.obstacle_group.add(
-                                Unit4Frames(
+                                AIUnit(
                                     type, 
                                     choice(imported_units), 
                                     -6))

@@ -2,7 +2,7 @@ import pygame
 from random import randint
 from config import *
 
-class Unit4Frames(pygame.sprite.Sprite):
+class AIUnit(pygame.sprite.Sprite):
     def __init__(self, type, image_path, loc = None, velocity = 0):
         super().__init__()
 

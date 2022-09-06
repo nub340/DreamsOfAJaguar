@@ -3,7 +3,7 @@ from config import *
 import os
 from sys import argv, exit
 from threading import Thread
-from stable_diffusion.dream import regenerate_unit, clear_dream_dirs
+from stable_diffusion.dream import regenerate_unit, clear_dream_dirs, ensure_api_key
 
 def get_units(type='air'):
     dir = f'graphics/ai_units/{type}/'
@@ -35,8 +35,7 @@ def extract_frame(img, frame):
     return img_out
 
 def regenerate_all_units():
-    if not os.environ.get('REPLICATE_API_TOKEN'):
-        os.environ["REPLICATE_API_TOKEN"] = input('Enter your REPLICATE_API_TOKEN: ').strip()
+    ensure_api_key()
 
     clear_folder('graphics/ai_units/air')
     clear_folder('graphics/ai_units/ground')

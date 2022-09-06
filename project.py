@@ -1,7 +1,7 @@
 from game import Game
 from sys import argv
 
-from unit_factory import regenerate_all_units, import_all_units
+from ai_unit_import import regenerate_all_units, import_all_units
 
 def main(dream):
     

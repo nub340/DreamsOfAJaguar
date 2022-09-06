@@ -17,10 +17,15 @@ STABLE_DIFFUSION_GSCALE=7.5
 
 model = replicate.models.get("stability-ai/stable-diffusion")
 
+def ensure_api_key():
+    if not os.environ.get('REPLICATE_API_TOKEN'):
+        os.environ["REPLICATE_API_TOKEN"] = input('Enter your REPLICATE_API_TOKEN: ').strip()
+
 def clear_dream_dirs():
     dir = 'stable_diffusion/dream/air'
     for f in os.listdir(dir):
         os.remove(os.path.join(dir, f))
+    dir = 'stable_diffusion/dream/ground'
     for f in os.listdir(dir):
         os.remove(os.path.join(dir, f))
 

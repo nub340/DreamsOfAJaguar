@@ -2,9 +2,9 @@ import pygame
 import os
 from threading import Thread
 
-from unit_factory import get_units, import_unit
-from stable_diffusion.dream import regenerate_unit
-from unit_4_frames import Unit4Frames
+from ai_unit_import import get_units, import_unit
+from stable_diffusion.dream import regenerate_unit, ensure_api_key
+from ai_unit import AIUnit
 
 class MainScreen:
     def __init__(self, screen, font, large_font):
@@ -28,7 +28,7 @@ class MainScreen:
         air_units_x = 125
         for i, air_unit_image_path in enumerate(sorted(self.air_units)):
             self.air_units_group.add(
-                Unit4Frames(
+                AIUnit(
                     'air', 
                     air_unit_image_path, 
                     (air_units_x, ((i + 1) * 80)+120)))
@@ -40,7 +40,7 @@ class MainScreen:
         ground_units_x = 675
         for i, ground_unit in enumerate(self.ground_units):
             self.ground_units_group.add(
-                Unit4Frames(
+                AIUnit(
                     'ground', 
                     ground_unit, 
                     (ground_units_x, ((i + 1) * 80)+120)))
@@ -53,6 +53,7 @@ class MainScreen:
         for i, air_unit in enumerate(self.air_units_group):
             if air_unit.rect.collidepoint(mouse_pos):
                 
+                ensure_api_key()
                 unit_no = os.path.basename(air_unit.image_path).replace('.png', '')
 
                 def replace_air_unit():
@@ -68,6 +69,7 @@ class MainScreen:
         for i, ground_unit in enumerate(self.ground_units_group):
             if ground_unit.rect.collidepoint(mouse_pos):
 
+                ensure_api_key()
                 unit_no = os.path.basename(ground_unit.image_path).replace('.png', '')
                 
                 # use closure to access state
