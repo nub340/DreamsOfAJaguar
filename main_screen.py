@@ -7,10 +7,11 @@ from stable_diffusion.dream import regenerate_unit, ensure_api_key
 from ai_unit import AIUnit
 
 class MainScreen:
-    def __init__(self, screen, font, large_font):
+    def __init__(self, screen, font, large_font, tip_font):
         self.screen = screen
         self.font = font
         self.large_font = large_font
+        self.tip_font = tip_font
 
         self.intro_background = pygame.image.load('graphics/map2.png').convert_alpha()
         self.intro_background_offset = 0
@@ -84,6 +85,7 @@ class MainScreen:
 
 
     def draw(self, prev_score, score, high_score, konami):
+        pygame.mouse.set_cursor(pygame.cursors.arrow)
         self.screen.fill((94, 129, 162))
         if self.intro_background_fwd:
             if self.intro_background_offset < -1000:
@@ -98,16 +100,16 @@ class MainScreen:
 
         self.screen.blit(self.intro_background, (self.intro_background_offset, 0))
 
-        self.game_name = self.large_font.render('Dream of the Jaguar', False, (0, 0, 0))
+        self.game_name = self.large_font.render('Dream of the Jaguar', False, (113, 6, 115))
         self.game_name_rect = self.game_name.get_rect(center = (400, 80))
         self.screen.blit(self.game_name, self.game_name_rect)
         
-        self.high_score_msg = self.font.render(f'High score: {high_score}', False, (0, 0, 0))
+        self.high_score_msg = self.font.render(f'High score: {high_score}', False, (113, 6, 115))
         self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
         self.screen.blit(self.high_score_msg, self.high_score_rect)
 
-        self.game_message = self.font.render('Press space to run', False, (0, 0, 0))
-        self.start_rect = self.game_message.get_rect(center = (400, 340))
+        # self.game_message = self.font.render('Press space to run', False, (156, 35, 158))
+        # self.start_rect = self.game_message.get_rect(center = (400, 340))
 
         if konami > 0:
             print('Konami activated!', konami)
@@ -124,8 +126,8 @@ class MainScreen:
 
         if prev_score > 0: game_message = 'Press space to continue...'
         else: game_message = 'Press space to run' 
-        self.game_message = self.font.render(game_message, False, (0, 0, 0))
-        self.start_rect = self.game_message.get_rect(center = (400, 350))
+        self.game_message = self.font.render(game_message, False, (113, 6, 115))
+        self.start_rect = self.game_message.get_rect(center = (400, 360))
         
         if score == 0: self.screen.blit(self.game_message, self.start_rect)
         else: self.screen.blit(self.score_message, self.score_message_rect)
@@ -135,5 +137,30 @@ class MainScreen:
 
         self.ground_units_group.draw(self.screen)
         self.ground_units_group.update()
+
+        mouse_pos = pygame.mouse.get_pos()
+        for i, sprite in enumerate(self.air_units_group.sprites()):
+            if sprite.rect.collidepoint(mouse_pos):
+                
+                tip = self.tip_font.render(f'REGENERATE AIR UNIT {i+1}', False, (0, 0, 0))
+
+                tip_surf = pygame.Surface(tip.get_size())
+                tip_surf.fill((200, 200, 200))
+                tip_surf.blit(tip, (2, 2))
+
+                self.screen.blit(tip_surf, tip_surf.get_rect(midleft = mouse_pos))
+                pygame.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
+
+        for i, sprite in enumerate(self.ground_units_group.sprites()):
+            if sprite.rect.collidepoint(mouse_pos):
+
+                tip = self.tip_font.render(f'REGENERATE GROUND UNIT {i+1}', False, (0, 0, 0))
+
+                tip_surf = pygame.Surface(tip.get_size())
+                tip_surf.fill((200, 200, 200))
+                tip_surf.blit(tip, (2, 2))
+
+                self.screen.blit(tip_surf, tip_surf.get_rect(midright = mouse_pos)) 
+                pygame.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
             
             

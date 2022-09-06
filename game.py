@@ -20,6 +20,7 @@ class Game():
         self.clock = pygame.time.Clock()
         self.game_font_large = pygame.font.Font('font/Pixeltype.ttf', 80)
         self.game_font = pygame.font.Font('font/Pixeltype.ttf', 50)
+        self.tip_font = pygame.font.Font('font/Pixeltype.ttf', 25)
         self.game_active = False
         self.start_time = 0
         pygame.mixer.Sound('audio/legend-of-narmer.mp3').play(loops = -1)
@@ -51,24 +52,7 @@ class Game():
         self.bg_sky_offset = 0
 
         # Intro screen
-        self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large)
-
-        # self.intro_background = pygame.image.load('graphics/map2.png').convert_alpha()
-        # self.intro_background_offset = 0
-        # self.intro_background_fwd = True
-
-        # self.player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
-        # self.player_stand = pygame.transform.rotozoom(self.player_stand,0,2)
-        # self.player_stand_rect = self.player_stand.get_rect(center = (400, 230))
-
-        # self.game_name = self.game_font_large.render('Jaguar Run', False, (0, 0, 0))
-        # self.game_name_rect = self.game_name.get_rect(center = (400, 80))
-
-        # self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
-        # self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
-
-        # self.game_message = self.game_font.render('Press space to run', False, (0, 0, 0))
-        # self.start_rect = self.game_message.get_rect(center = (400, 340))
+        self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large, self.tip_font)
 
         # Timer
         self.enemy_timer = pygame.USEREVENT + 1
