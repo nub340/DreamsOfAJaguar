@@ -22,21 +22,20 @@ def ensure_api_key():
         os.environ["REPLICATE_API_TOKEN"] = input('Enter your REPLICATE_API_TOKEN: ').strip()
 
 def clear_dream_dirs():
-    dir = 'stable_diffusion/dream/air'
+    dir = 'stable_diffusion/air'
     for f in os.listdir(dir):
         os.remove(os.path.join(dir, f))
-    dir = 'stable_diffusion/dream/ground'
+    dir = 'stable_diffusion/ground'
     for f in os.listdir(dir):
         os.remove(os.path.join(dir, f))
 
 def regenerate_unit(type, unit_no):
-    path = f'stable_diffusion/dream/{type}/{unit_no}.png'
+    path = f'stable_diffusion/{type}/{unit_no}.png'
     generate_unit_image(type).save(path)
     return path
 
 def generate_unit_image(type):
     url = dream_new_unit(type)
-    # print(url)
     return Image.open(requests.get(url, stream=True).raw)
 
 def preview_new_unit(type):
@@ -47,12 +46,12 @@ def preview_new_unit(type):
 def dream_new_unit(type):
     if type == 'air': 
         prompt = STABLE_DIFFUSION_PROMPT_AIR 
-        init_image = 'stable_diffusion/dream/init_image/bat.png'
-        # mask = 'stable_diffusion/dream/init_image/bird2mask.png'
+        init_image = 'stable_diffusion/init_image/bat.png'
+        # mask = 'stable_diffusion/init_image/bird2mask.png'
     else: 
         prompt = STABLE_DIFFUSION_PROMPT_GROUND
-        init_image = 'stable_diffusion/dream/init_image/jag.png'
-        # mask = 'stable_diffusion/dream/init_image/jagmask.png'
+        init_image = 'stable_diffusion/init_image/jag.png'
+        # mask = 'stable_diffusion/init_image/jagmask.png'
     
     attempts = 0
     while attempts < 3:
