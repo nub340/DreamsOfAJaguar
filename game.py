@@ -7,7 +7,7 @@ from config import *
 from player import Player
 from enemy import Enemy
 from unit_4_frames import Unit4Frames
-from import_units import get_imported_units_list
+from unit_factory import get_units
 from main_screen import MainScreen
 import os
 
@@ -150,8 +150,8 @@ class Game():
             pygame.K_b, pygame.K_a]
         
         units = {
-            'air': get_imported_units_list('air'), 
-            'ground': get_imported_units_list('ground')
+            'air': get_units('air'), 
+            'ground': get_units('ground')
         }
         while True:
             for event in pygame.event.get():
@@ -167,7 +167,11 @@ class Game():
                         if unit_types:
                             type = choice(unit_types)
                             imported_units = units[type]
-                            self.obstacle_group.add(Unit4Frames(type, choice(imported_units)))
+                            self.obstacle_group.add(
+                                Unit4Frames(
+                                    type, 
+                                    choice(imported_units), 
+                                    -6))
                         else:
                             self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
 
@@ -192,6 +196,9 @@ class Game():
                         if event.key == pygame.K_SPACE:
                             self.start_time = int(pygame.time.get_ticks() / 1000)
                             self.game_active = True
+
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        self.main_screen.mouse_clicked()
 
             if self.game_active:
                 self.draw_environment_layers()

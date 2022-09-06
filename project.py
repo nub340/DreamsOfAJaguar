@@ -1,12 +1,13 @@
 from game import Game
 from sys import argv
 
-from stable_diffusion.dream import refresh_units
+from unit_factory import regenerate_all_units, import_all_units
 
 def main(dream):
     
     if dream:
-        refresh_units()
+        regenerate_all_units()
+        import_all_units()
 
     game = Game()
     game.run()
