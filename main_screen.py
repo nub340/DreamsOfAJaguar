@@ -101,7 +101,7 @@ class MainScreen:
         self.screen.blit(self.intro_background, (self.intro_background_offset, 0))
 
         self.game_name = self.large_font.render('Dream of the Jaguar', False, (113, 6, 115))
-        self.game_name_rect = self.game_name.get_rect(center = (400, 80))
+        self.game_name_rect = self.game_name.get_rect(center = (400, 50))
         self.screen.blit(self.game_name, self.game_name_rect)
         
         self.high_score_msg = self.font.render(f'High score: {high_score}', False, (113, 6, 115))
@@ -128,6 +128,11 @@ class MainScreen:
         else: game_message = 'Press space to run' 
         self.game_message = self.font.render(game_message, False, (113, 6, 115))
         self.start_rect = self.game_message.get_rect(center = (400, 360))
+
+        game_message_surf = pygame.Surface(self.game_message.get_size())
+        game_message_surf.fill((200, 200, 200))
+        game_message_surf.blit(self.game_message, (2, 2))
+        self.screen.blit(game_message_surf, self.game_message.get_rect(center = (400, 90))) 
         
         if score == 0: self.screen.blit(self.game_message, self.start_rect)
         else: self.screen.blit(self.score_message, self.score_message_rect)
