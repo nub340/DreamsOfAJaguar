@@ -23,6 +23,7 @@ class Game():
         self.tip_font = pygame.font.Font('font/Pixeltype.ttf', 25)
         self.game_active = False
         self.start_time = 0
+        pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR))
         pygame.mixer.Sound('audio/legend-of-narmer.mp3').play(loops = -1)
 
         self.score = 0
@@ -204,6 +205,7 @@ class Game():
                     self.save_score(0, self.high_score)
 
             else:
+                #pygame.mouse.set_cursor(pygame.cursors.arrow)
                 self.main_screen.draw(self.prev_score, self.score, self.high_score, konami)
                 
             pygame.display.update()
