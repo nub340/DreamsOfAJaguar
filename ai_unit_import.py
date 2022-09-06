@@ -62,9 +62,9 @@ def import_unit(type='air', unit_no = None):
     # build a list of images to process
     queue = []
     if unit_no:
-        queue = [f'stable_diffusion/dream/{type}/{unit_no}.png']
+        queue = [f'stable_diffusion/{type}/{unit_no}.png']
     else:
-        dir = f'stable_diffusion/dream/{type}/'
+        dir = f'stable_diffusion/{type}/'
         queue = list(map(lambda p: dir + p, os.listdir(dir)))
 
     # process each image in the list...
