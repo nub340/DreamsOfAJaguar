@@ -154,7 +154,8 @@ class Game():
                             self.obstacle_group.add(
                                 AIUnit(
                                     type, 
-                                    choice(imported_units), 
+                                    choice(imported_units),
+                                    None,
                                     -6))
                         else:
                             self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
