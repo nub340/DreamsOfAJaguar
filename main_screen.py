@@ -20,7 +20,7 @@ class MainScreen:
 
         self.player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
         self.player_stand = pygame.transform.rotozoom(self.player_stand,0,2)
-        self.player_stand_rect = self.player_stand.get_rect(center = (400, 230))
+        self.player_stand_rect = self.player_stand.get_rect(center = (400, 220))
 
         self.init_units()
 
@@ -106,7 +106,7 @@ class MainScreen:
         self.screen.blit(self.game_name, self.game_name_rect)
         
         self.high_score_msg = self.font.render(f'High score: {high_score}', False, (113, 6, 115))
-        self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
+        self.high_score_rect = self.high_score_msg.get_rect(center = (400, 95))
         self.screen.blit(self.high_score_msg, self.high_score_rect)
 
         # self.game_message = self.font.render('Press space to run', False, (156, 35, 158))
@@ -126,9 +126,10 @@ class MainScreen:
         else: game_message = 'Press space to continue...'
 
         game_message_surf = self.font.render(game_message, False, (0, 0, 0))
-        bottom_bar = pygame.Surface((800 , 50))
+        bottom_bar = pygame.Surface((800 , 40))
+        bottom_bar.set_alpha(220)
         bottom_bar.fill((200, 200, 200))
-        bottom_bar.blit(game_message_surf, game_message_surf.get_rect(center = (400, 30)))
+        bottom_bar.blit(game_message_surf, game_message_surf.get_rect(center = (400, 25)))
         self.screen.blit(bottom_bar, bottom_bar.get_rect(bottomleft = (0, 400))) 
 
         self.air_units_group.draw(self.screen)
