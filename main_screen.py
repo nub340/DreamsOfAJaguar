@@ -2,6 +2,7 @@ from turtle import width
 import pygame
 import os
 from threading import Thread
+import pygame
 
 from ai_unit_import import get_units, import_unit
 from stable_diffusion.dream import regenerate_unit, ensure_api_key
@@ -84,7 +85,18 @@ class MainScreen:
 
                 Thread(target=replace_ground_unit, name=f'gworker{i}').start()
 
+    #  attempt at Bloom Layer Via CV
+    # def create_neon(self , surf):
+    #     surf_alpha = surf.convert_alpha()
+    #     rgb = pygame.surfarray.array3d(surf_alpha)
+    #     alpha = pygame.surfarray.array_alpha(surf_alpha).reshape((*rgb.shape[:2], 1))
+    #     image = numpy.concatenate((rgb, alpha), 2)
+    #     cv2.GaussianBlur(image, ksize=(11, 11), sigmaX=5, sigmaY=5, dst=image)
+    #     cv2.blur(image, ksize=(5, 5), dst=image)
+    #     bloom_surf = pygame.image.frombuffer(image.flatten(), image.shape[1::-1], 'RGBA')
+    #     return bloom_surf
 
+        
     def draw(self, prev_score, score, high_score, konami):
         pygame.mouse.set_cursor(pygame.cursors.arrow)
         self.screen.fill((94, 129, 162))
@@ -104,6 +116,9 @@ class MainScreen:
         self.game_name = self.large_font.render('Dream of the Jaguar', False, (113, 6, 115))
         self.game_name_rect = self.game_name.get_rect(center = (400, 50))
         self.screen.blit(self.game_name, self.game_name_rect)
+
+        # self.game_name = self.create_neon(self.game_name)
+        # self.screen.blit(self.game_name, self.game_name_rect)
         
         self.high_score_msg = self.font.render(f'High score: {high_score}', False, (113, 6, 115))
         self.high_score_rect = self.high_score_msg.get_rect(center = (400, 95))
@@ -129,7 +144,7 @@ class MainScreen:
         bottom_bar = pygame.Surface((800 , 40))
         bottom_bar.set_alpha(220)
         bottom_bar.fill((200, 200, 200))
-        bottom_bar.blit(game_message_surf, game_message_surf.get_rect(center = (400, 25)))
+        bottom_bar.blit(game_message_surf, game_message_surf.get_rect(center = (400, 23)))
         self.screen.blit(bottom_bar, bottom_bar.get_rect(bottomleft = (0, 400))) 
 
         self.air_units_group.draw(self.screen)
