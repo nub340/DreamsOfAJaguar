@@ -1,3 +1,4 @@
+from turtle import width
 import pygame
 import os
 from threading import Thread
@@ -114,28 +115,21 @@ class MainScreen:
         if konami > 0:
             print('Konami activated!', konami)
             player_stand = pygame.transform.rotate(self.player_stand, konami)
-            self.screen.blit(player_stand, player_stand.get_rect(center = (400, 250)))
+            self.screen.blit(player_stand, player_stand.get_rect(center = (400, 25)))
             konami += 10
             if konami >= 360:
                 konami = 0
         else:
             self.screen.blit(self.player_stand, self.player_stand_rect)
 
-        self.score_message = self.font.render(f'Your score: {score}', False, (0, 0, 0))
-        self.score_message_rect = self.score_message.get_rect(center = (400, 340))
+        if prev_score > 0: game_message = f'Your score: {prev_score}'
+        else: game_message = 'Press space to continue...'
 
-        if prev_score > 0: game_message = 'Press space to continue...'
-        else: game_message = 'Press space to run' 
-        self.game_message = self.font.render(game_message, False, (113, 6, 115))
-        self.start_rect = self.game_message.get_rect(center = (400, 360))
-
-        game_message_surf = pygame.Surface(self.game_message.get_size())
-        game_message_surf.fill((200, 200, 200))
-        game_message_surf.blit(self.game_message, (2, 2))
-        self.screen.blit(game_message_surf, self.game_message.get_rect(center = (400, 90))) 
-        
-        if score == 0: self.screen.blit(self.game_message, self.start_rect)
-        else: self.screen.blit(self.score_message, self.score_message_rect)
+        game_message_surf = self.font.render(game_message, False, (0, 0, 0))
+        bottom_bar = pygame.Surface((800 , 50))
+        bottom_bar.fill((200, 200, 200))
+        bottom_bar.blit(game_message_surf, game_message_surf.get_rect(center = (400, 30)))
+        self.screen.blit(bottom_bar, bottom_bar.get_rect(bottomleft = (0, 400))) 
 
         self.air_units_group.draw(self.screen)
         self.air_units_group.update()

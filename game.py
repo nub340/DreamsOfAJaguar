@@ -16,6 +16,8 @@ class Game():
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen_rect = self.screen.get_rect(topleft = (0, 0))
+        icon = pygame.image.load('graphics/Player/player_icon.png')
+        pygame.display.set_icon(icon)
         pygame.display.set_caption('Jaguar Run')
         self.clock = pygame.time.Clock()
         self.game_font_large = pygame.font.Font('font/Pixeltype.ttf', 80)
