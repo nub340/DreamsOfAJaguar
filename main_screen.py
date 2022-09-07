@@ -3,6 +3,7 @@ import pygame
 import os
 from threading import Thread
 import pygame
+from PIL import Image, ImageFilter
 
 from ai_unit_import import get_units, import_unit
 from stable_diffusion.dream import regenerate_unit, ensure_api_key
@@ -34,7 +35,7 @@ class MainScreen:
                 AIUnit(
                     'air', 
                     air_unit_image_path, 
-                    (air_units_x, ((i + 1) * 80)+120)))
+                    (air_units_x, ((i + 1) * 80)+100)))
             if i % 2 == 0: air_units_x -= 40
             else: air_units_x += 40
 
@@ -46,7 +47,7 @@ class MainScreen:
                 AIUnit(
                     'ground', 
                     ground_unit, 
-                    (ground_units_x, ((i + 1) * 80)+120)))
+                    (ground_units_x, ((i + 1) * 80)+100)))
             if i % 2 == 0: ground_units_x += 40
             else: ground_units_x -= 40
 
@@ -115,8 +116,15 @@ class MainScreen:
 
         self.game_name = self.large_font.render('Dream of the Jaguar', False, (113, 6, 115))
         self.game_name_rect = self.game_name.get_rect(center = (400, 50))
-        self.screen.blit(self.game_name, self.game_name_rect)
 
+        blurred_game_name = self.large_font.render('Dream of the Jaguar', False, (255, 255, 255))
+        raw = pygame.image.tostring(blurred_game_name, 'RGBA')
+        blurred = Image.frombytes("RGBA", self.game_name.get_size(), raw).filter(ImageFilter.GaussianBlur(2)).filter(ImageFilter.GaussianBlur(2))
+        blurred = pygame.image.fromstring(blurred.tobytes("raw", 'RGBA'), self.game_name.get_size(), 'RGBA')
+        
+        self.screen.blit(blurred, self.game_name_rect)
+        self.screen.blit(self.game_name, self.game_name_rect)
+        
         # self.game_name = self.create_neon(self.game_name)
         # self.screen.blit(self.game_name, self.game_name_rect)
         

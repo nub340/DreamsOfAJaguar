@@ -27,7 +27,8 @@ class Game():
         self.game_active = False
         self.start_time = 0
         pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR))
-        pygame.mixer.Sound('audio/legend-of-narmer.mp3').play(loops = -1)
+        self.game_music = None 
+        self.paused = False
 
         self.score = 0
         self.prev_score = 0
@@ -61,6 +62,16 @@ class Game():
         # Timer
         self.enemy_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.enemy_timer, 1500)
+
+    def set_game_music(self, track):
+        if track == 'intro' and self.game_music != 'intro':
+            self.game_music = track
+            pygame.mixer.music.load('audio/legend-of-narmer.mp3')
+            pygame.mixer.music.play(-1)
+        elif track == 'in_game' and self.game_music != 'in_game':
+            self.game_music = track
+            pygame.mixer.music.load('audio/music.wav')
+            pygame.mixer.music.play(-1)
 
     def display_score(self):
         current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
@@ -147,7 +158,7 @@ class Game():
                     pygame.quit()
                     exit()
 
-                if self.game_active:
+                if self.game_active and not self.paused:
                     if event.type == self.enemy_timer:
                         unit_types = []
                         if units['air']: unit_types.append('air')
@@ -165,7 +176,7 @@ class Game():
                         pygame.quit()
                         exit()
 
-                else:
+                elif not self.paused:
                     if event.type == pygame.KEYDOWN:
 
                         if konami == 0 and event.key == konami_code[konami_index]:
@@ -185,7 +196,8 @@ class Game():
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         self.main_screen.mouse_clicked()
 
-            if self.game_active:
+            if self.game_active and not self.paused:
+                self.set_game_music('in_game')
                 self.draw_environment_layers()
                 self.score = self.display_score()
 
@@ -197,6 +209,7 @@ class Game():
 
                 self.game_active = self.collision_sprite()
                 if not self.game_active: 
+
                     self.__player__.reset_start_pos()
                     if self.score > 0:
                         self.prev_score = 0
@@ -205,7 +218,7 @@ class Game():
                     self.save_score(0, self.high_score)
 
             else:
-                #pygame.mouse.set_cursor(pygame.cursors.arrow)
+                self.set_game_music('intro')
                 self.main_screen.draw(self.prev_score, self.score, self.high_score, konami)
                 
             pygame.display.update()
