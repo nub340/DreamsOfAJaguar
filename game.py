@@ -82,7 +82,10 @@ class Game():
    
     def collision_sprite(self):
         #return True
-        colliding = pygame.sprite.spritecollide(self.player.sprite, self.obstacle_group, False)
+        colliding = (
+            pygame.sprite.spritecollide(self.player.sprite, self.obstacle_group, False) and 
+            pygame.sprite.spritecollide(self.player.sprite, self.obstacle_group, False, pygame.sprite.collide_mask)
+        )
         if colliding:
             player = self.player.sprites()[0]
             for object in colliding:

@@ -17,6 +17,7 @@ class AIUnit(pygame.sprite.Sprite):
             pygame.transform.scale(self.source_image.subsurface((0, 64, 64, 64)), (96, 96)),
             pygame.transform.scale(self.source_image.subsurface((64, 64, 64, 64)), (96, 96))]
         self.image = self.frames[self.animation_index]
+        self.mask = pygame.mask.from_surface(self.image)
 
         if type == 'air':
             if not loc: loc = (randint(900, 1100), randint(200, 270))
@@ -29,6 +30,7 @@ class AIUnit(pygame.sprite.Sprite):
         self.animation_index += 0.1
         if self.animation_index >= len(self.frames): self.animation_index = 0
         self.image = self.frames[int(self.animation_index)]
+        self.mask = pygame.mask.from_surface(self.image) 
 
     def update(self):
         self.animate()
