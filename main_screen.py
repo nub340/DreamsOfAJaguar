@@ -1,4 +1,4 @@
-from turtle import width
+
 import pygame
 import os
 from threading import Thread
@@ -86,18 +86,58 @@ class MainScreen:
 
                 Thread(target=replace_ground_unit, name=f'gworker{i}').start()
 
-    #  attempt at Bloom Layer Via CV
-    # def create_neon(self , surf):
-    #     surf_alpha = surf.convert_alpha()
-    #     rgb = pygame.surfarray.array3d(surf_alpha)
-    #     alpha = pygame.surfarray.array_alpha(surf_alpha).reshape((*rgb.shape[:2], 1))
-    #     image = numpy.concatenate((rgb, alpha), 2)
-    #     cv2.GaussianBlur(image, ksize=(11, 11), sigmaX=5, sigmaY=5, dst=image)
-    #     cv2.blur(image, ksize=(5, 5), dst=image)
-    #     bloom_surf = pygame.image.frombuffer(image.flatten(), image.shape[1::-1], 'RGBA')
-    #     return bloom_surf
 
+    def make_dreamy(self, input_surf, color = (255, 255, 255), border_width = 2, blur_radius = 2):
         
+        # create mask surface from mask of input_surf, set black pixels to be transparent
+        input_mask_surf = pygame.mask.from_surface(input_surf).to_surface()
+        input_mask_surf.set_colorkey((0,0,0))
+
+        # change color of all non-black pixels
+        input_w, input_h = input_mask_surf.get_size()
+        for x in range(input_w):
+            for y in range(input_h):
+                if input_mask_surf.get_at((x, y))[0] != 0:
+                    input_mask_surf.set_at((x, y), color)
+
+        # calculate some needed dimensions. Square the blur radius to avoid clipping.
+        padding = (border_width * blur_radius)
+        output_w = input_w + (padding * 2) + (blur_radius**2)
+        output_h = input_h + (padding * 2) + (blur_radius**2)
+
+        # draw border/background...
+        # blit mask surface 9 times, each offset in a different direction relative to the center: 
+        # topleft, left, bottomleft, up, center, down, topright, right, bottomright. 
+        input_mask_centered_rect = input_mask_surf.get_rect(center = (output_w/2, output_h/2))
+        output_surface = pygame.Surface((output_w, output_h))
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x - padding, input_mask_centered_rect.y-padding))
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x - padding, input_mask_centered_rect.y))
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x - padding, input_mask_centered_rect.y+padding))
+
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x, input_mask_centered_rect.y-padding))
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x, input_mask_centered_rect.y))
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x, input_mask_centered_rect.y+padding))
+
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x + padding, input_mask_centered_rect.y-padding))
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x + padding, input_mask_centered_rect.y))
+        output_surface.blit(input_mask_surf, (input_mask_centered_rect.x + padding, input_mask_centered_rect.y+padding))
+
+        # blur the resulting border/background via PIL and then convert it back to a surface
+        image = Image.frombytes(
+            "RGBA", 
+            output_surface.get_size(), 
+            pygame.image.tostring(output_surface, 'RGBA')).filter(
+                ImageFilter.GaussianBlur(blur_radius))
+
+        output_surface = pygame.image.fromstring(
+            image.tobytes("raw", 'RGBA'), 
+            output_surface.get_size(), 
+            'RGBA')
+
+        # finally, blit the original unaltered input surface centered onto the output_surface
+        output_surface.blit(input_surf, input_surf.get_rect(center = (output_w/2, output_h/2)))
+        return output_surface
+
     def draw(self, prev_score, score, high_score, konami):
         pygame.mouse.set_cursor(pygame.cursors.arrow)
         self.screen.fill((94, 129, 162))
@@ -117,23 +157,14 @@ class MainScreen:
         self.game_name = self.large_font.render('Dream of the Jaguar', False, (113, 6, 115))
         self.game_name_rect = self.game_name.get_rect(center = (400, 50))
 
-        blurred_game_name = self.large_font.render('Dream of the Jaguar', False, (255, 255, 255))
-        raw = pygame.image.tostring(blurred_game_name, 'RGBA')
-        blurred = Image.frombytes("RGBA", self.game_name.get_size(), raw).filter(ImageFilter.GaussianBlur(2)).filter(ImageFilter.GaussianBlur(2))
-        blurred = pygame.image.fromstring(blurred.tobytes("raw", 'RGBA'), self.game_name.get_size(), 'RGBA')
-        
-        self.screen.blit(blurred, self.game_name_rect)
-        self.screen.blit(self.game_name, self.game_name_rect)
-        
-        # self.game_name = self.create_neon(self.game_name)
-        # self.screen.blit(self.game_name, self.game_name_rect)
+        dreamy_color = '#f786f9'
+        self.game_name = self.make_dreamy(self.game_name, dreamy_color, 0, 4)
+        self.screen.blit(self.game_name, self.game_name.get_rect(center = (400, 50)))
         
         self.high_score_msg = self.font.render(f'High score: {high_score}', False, (113, 6, 115))
+        self.high_score_msg = self.make_dreamy(self.high_score_msg, dreamy_color, 0, 4)
         self.high_score_rect = self.high_score_msg.get_rect(center = (400, 95))
         self.screen.blit(self.high_score_msg, self.high_score_rect)
-
-        # self.game_message = self.font.render('Press space to run', False, (156, 35, 158))
-        # self.start_rect = self.game_message.get_rect(center = (400, 340))
 
         if konami > 0:
             print('Konami activated!', konami)
@@ -143,6 +174,7 @@ class MainScreen:
             if konami >= 360:
                 konami = 0
         else:
+            #player_stand = self.make_dreamy(self.player_stand, 'white', 0, 4)
             self.screen.blit(self.player_stand, self.player_stand_rect)
 
         if prev_score > 0: game_message = f'Your score: {prev_score}'
@@ -152,6 +184,7 @@ class MainScreen:
         bottom_bar = pygame.Surface((800 , 40))
         bottom_bar.set_alpha(220)
         bottom_bar.fill((200, 200, 200))
+        game_message_surf = self.make_dreamy(game_message_surf, 'white', 0, 4)
         bottom_bar.blit(game_message_surf, game_message_surf.get_rect(center = (400, 23)))
         self.screen.blit(bottom_bar, bottom_bar.get_rect(bottomleft = (0, 400))) 
 
