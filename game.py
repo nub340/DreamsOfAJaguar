@@ -43,6 +43,10 @@ class Game():
         self.player.add(self.__player__)
 
         self.obstacle_group = pygame.sprite.Group()
+        self.units = {
+            'air': get_units('air'), 
+            'ground': get_units('ground')
+        }
 
         # Background, ground
         self.bg_ground_surface = pygame.image.load('graphics/mayanbg1.png').convert_alpha()
@@ -142,19 +146,14 @@ class Game():
         save_file.close()
 
     def run(self):
-        konami = 0
-        konami_index = 0
-        konami_code = [
+        code_idx = 0
+        code = [
             pygame.K_UP, pygame.K_UP, 
             pygame.K_DOWN, pygame.K_DOWN, 
             pygame.K_LEFT, pygame.K_RIGHT, 
             pygame.K_LEFT, pygame.K_RIGHT,
             pygame.K_b, pygame.K_a]
-        
-        units = {
-            'air': get_units('air'), 
-            'ground': get_units('ground')
-        }
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -164,11 +163,11 @@ class Game():
                 if self.game_active:
                     if event.type == self.enemy_timer:
                         unit_types = []
-                        if units['air']: unit_types.append('air')
-                        if units['ground']: unit_types.append('ground')
+                        if self.units['air']: unit_types.append('air')
+                        if self.units['ground']: unit_types.append('ground')
                         if unit_types:
                             type = choice(unit_types)
-                            imported_units = units[type]
+                            imported_units = self.units[type]
                             self.obstacle_group.add(
                                 AIUnit(type, choice(imported_units), None, -6))
                         else:
@@ -179,19 +178,17 @@ class Game():
                         pygame.quit()
                         exit()
 
-                else:
-
+                else: 
                     if event.type == pygame.KEYDOWN:
 
-                        if konami == 0 and event.key == konami_code[konami_index]:
-                            konami_index += 1
-                            print('konamicode'[konami_index-1:konami_index])
-                            if konami_index == len(konami_code):
-                                konami = 10
+                        if event.key == code[code_idx]:
+                            code_idx += 1
+                            if code_idx == len(code):
                                 self.player.sprites()[0].death_sound.play()
-                                konami_index = 0
+                                self.main_screen.trigger_easter_egg()
+                                code_idx = 0
                         else:
-                            konami_index = 0
+                            code_idx = 0
 
                         if event.key == pygame.K_SPACE:
                             self.start_time = int(pygame.time.get_ticks() / 1000)
@@ -202,7 +199,7 @@ class Game():
                         self.main_screen.mouse_clicked()
 
             if self.game_active:
-                self.set_game_music('in_game')
+                self.set_game_music('intro')
                 self.draw_environment_layers()
                 self.score = self.display_score()
 
@@ -227,7 +224,7 @@ class Game():
 
                 if not self.main_screen:
                     self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score)
-                self.main_screen.draw(konami)
+                self.main_screen.draw()
                 
             pygame.display.update()
             self.clock.tick(60)

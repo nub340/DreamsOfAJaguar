@@ -7,17 +7,23 @@ class AIUnit(pygame.sprite.Sprite):
         super().__init__()
 
         self.type = type
-        self.animation_index = 0
         self.image_path = image_path
         self.source_image = pygame.image.load(image_path).convert_alpha()
         self.velocity = velocity
+
         self.frames = [
             pygame.transform.scale(self.source_image.subsurface((0, 0, 64, 64)), (96, 96)),
             pygame.transform.scale(self.source_image.subsurface((64, 0, 64, 64)), (96, 96)),
             pygame.transform.scale(self.source_image.subsurface((0, 64, 64, 64)), (96, 96)),
             pygame.transform.scale(self.source_image.subsurface((64, 64, 64, 64)), (96, 96))]
-        self.image = self.frames[self.animation_index]
-        self.mask = pygame.mask.from_surface(self.image)
+        
+        self.masks = []
+        for f in self.frames:
+            self.masks.append(pygame.mask.from_surface(f))
+
+        self.animation_index = 0
+        self.image = self.frames[int(self.animation_index)]
+        self.mask = self.masks[int(self.animation_index)]
 
         if type == 'air':
             if not loc: loc = (randint(900, 1100), randint(200, 270))
@@ -30,7 +36,7 @@ class AIUnit(pygame.sprite.Sprite):
         self.animation_index += 0.1
         if self.animation_index >= len(self.frames): self.animation_index = 0
         self.image = self.frames[int(self.animation_index)]
-        self.mask = pygame.mask.from_surface(self.image) 
+        self.mask = self.masks[int(self.animation_index)] 
 
     def update(self):
         self.animate()

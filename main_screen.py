@@ -22,17 +22,15 @@ class MainScreen:
         self.intro_background_offset = 0
         self.intro_background_fwd = True
 
-        #self.shimmer_surf = pygame.Surface((20, 100), pygame.SRCALPHA)
+        self.shimmer_start_x = -2480
+        self.shimmer_max_x = 3000
+        self.shimmer_speed = 7
         self.shimmer_surf = pygame.image.load('graphics/alpha.shimmer.png').convert_alpha()
-        #self.shimmer_surf.fill('gray')
-        #self.shimmer_surf = pygame.transform.rotate(self.shimmer_surf, 135)
-        self.shimmer_x = -50
-        self.shimmer_speed = 1
-        self.shimmer_rect = self.shimmer_surf.get_rect(topleft = (self.shimmer_x, 10))
+        self.shimmer_rect = self.shimmer_surf.get_rect(topleft = (self.shimmer_start_x, 10))
         self.shimmer_mask = pygame.mask.from_surface(self.shimmer_surf)
 
         self.dreamy_color = '#f786f9'
-        self.game_title_surf = self.large_font.render('Dream of a Jaguar', False, (113, 6, 115))
+        self.game_title_surf = self.large_font.render('Dreams of a Jaguar', False, (113, 6, 115))
         self.game_title_mask = pygame.mask.from_surface(self.game_title_surf)
         self.game_title_rect = self.game_title_surf.get_rect(center = (400, 50))
 
@@ -75,6 +73,7 @@ class MainScreen:
         self.ground_units_group = pygame.sprite.Group()
         self.ground_units = get_units('ground')
         ground_units_x = 675
+        self.angle = 0
         for i, ground_unit in enumerate(self.ground_units):
             self.ground_units_group.add(
                 AIUnit(
@@ -88,6 +87,7 @@ class MainScreen:
         mouse_pos = pygame.mouse.get_pos()
 
         for i, air_unit in enumerate(self.air_units_group):
+            
             if air_unit.rect.collidepoint(mouse_pos):
                 
                 ensure_api_key()
@@ -176,7 +176,7 @@ class MainScreen:
         output_surface.blit(input_surf, input_surf.get_rect(center = (output_w/2, output_h/2)))
         return output_surface
 
-    def draw(self, konami):
+    def draw(self):
         
         # background
         self.screen.fill((94, 129, 162))   
@@ -194,24 +194,22 @@ class MainScreen:
         self.screen.blit(self.intro_background, (self.intro_background_offset, 0)) 
 
         # game title
-        # self.game_title_surf = self.large_font.render('Dream of a Jaguar', False, (113, 6, 115))
-        border_width = 0
-        blur_radius = 4
-        dreamy_game_title_surf = self.make_dreamy(self.game_title_surf, self.dreamy_color, border_width, blur_radius)
+        dreamy_game_title_surf = self.make_dreamy(self.game_title_surf, self.dreamy_color, 0, 4)
         self.screen.blit(dreamy_game_title_surf, dreamy_game_title_surf.get_rect(center = (400, 50)))
         
         # animate shimmer rect
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_LEFT]:
             self.shimmer_rect.x -= self.shimmer_speed*2
-        if self.shimmer_rect.x < 1000:
+        elif self.shimmer_rect.x < self.shimmer_max_x:
             self.shimmer_rect.x += self.shimmer_speed
         else:
-            self.shimmer_rect.x = -150
+            #self.shimmer_speed = max(self.shimmer_speed / 2, 1)
+            self.shimmer_rect.x = self.shimmer_start_x
             
         # game title shimmer
-        offset_x = (self.game_title_rect.x - self.shimmer_rect.left) #+ (blur_radius**2) + border_width
-        offset_y = (self.game_title_rect.y - self.shimmer_rect.top) #+ (blur_radius**2) + border_width
+        offset_x = (self.game_title_rect.x - self.shimmer_rect.left)
+        offset_y = (self.game_title_rect.y - self.shimmer_rect.top)
         if (self.shimmer_rect.colliderect(self.game_title_rect)
             and self.shimmer_mask.overlap(self.game_title_mask, (offset_x, offset_y))):
             new_mask = self.shimmer_mask.overlap_mask(self.game_title_mask, (offset_x, offset_y))
@@ -224,22 +222,36 @@ class MainScreen:
                     if new_surface.get_at((x, y))[0] != 0:
                         new_surface.set_at((x, y), 'white')
 
-            #new_surface.set_alpha(200)
             new_surface = self.make_dreamy(new_surface, 'purple', 2, 2)
-            #self.screen.blit(new_surface, (self.shimmer_rect.x, self.shimmer_rect.y))
             self.screen.blit(new_surface, new_surface.get_rect(topleft = (self.shimmer_rect.left-6, self.shimmer_rect.top-6)))
 
         # high score 
         self.screen.blit(self.high_score_surf, self.high_score_rect)
 
+        offset_x = (self.high_score_rect.x - self.shimmer_rect.left)
+        offset_y = (self.high_score_rect.y - self.shimmer_rect.top)
+        if (self.shimmer_rect.colliderect(self.high_score_rect)
+            and self.shimmer_mask.overlap(self.high_score_mask, (offset_x, offset_y))):
+            new_mask = self.shimmer_mask.overlap_mask(self.high_score_mask, (offset_x, offset_y))
+            new_surface = new_mask.to_surface().convert()
+            new_surface.set_colorkey((0, 0, 0))
+            
+            w, h = new_surface.get_size()
+            for x in range(w):
+                for y in range(h):
+                    if new_surface.get_at((x, y))[0] != 0:
+                        new_surface.set_at((x, y), 'white')
+
+            new_surface = self.make_dreamy(new_surface, 'purple', 2, 2)
+            self.screen.blit(new_surface, new_surface.get_rect(topleft = (self.shimmer_rect.left-6, self.shimmer_rect.top-6)))
+
         # player character
-        if konami > 0:
-            print('Konami activated!', konami)
-            player_stand = pygame.transform.rotate(self.player_surf, konami)
+        if self.angle > 0:
+            player_stand = pygame.transform.rotate(self.player_surf, self.angle)
             self.screen.blit(player_stand, player_stand.get_rect(center = (400, 25)))
-            konami += 10
-            if konami >= 360:
-                konami = 0
+            self.angle += 10
+            if self.angle >= 360:
+                self.angle = 0
         else:
             self.screen.blit(self.player_surf, self.player_rect)
 
@@ -256,7 +268,9 @@ class MainScreen:
         # show mouse hover tooltip
         mouse_pos = pygame.mouse.get_pos()
         for i, sprite in enumerate(self.air_units_group.sprites()):
-            if sprite.rect.collidepoint(mouse_pos):
+            pos_in_mask = mouse_pos[0] - sprite.rect.x, mouse_pos[1] - sprite.rect.y
+            touching = sprite.rect.collidepoint(*mouse_pos) and sprite.mask.get_at(pos_in_mask)
+            if touching:
                 
                 tip = self.tip_font.render(f'REGENERATE AIR UNIT {i+1}', False, (0, 0, 0))
 
@@ -265,10 +279,11 @@ class MainScreen:
                 tip_surf.blit(tip, (2, 2))
 
                 self.screen.blit(tip_surf, tip_surf.get_rect(midleft = mouse_pos))
-                #pygame.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
 
         for i, sprite in enumerate(self.ground_units_group.sprites()):
-            if sprite.rect.collidepoint(mouse_pos):
+            pos_in_mask = mouse_pos[0] - sprite.rect.x, mouse_pos[1] - sprite.rect.y
+            touching = sprite.rect.collidepoint(*mouse_pos) and sprite.mask.get_at(pos_in_mask)
+            if touching:
 
                 tip = self.tip_font.render(f'REGENERATE GROUND UNIT {i+1}', False, (0, 0, 0))
 
@@ -277,6 +292,7 @@ class MainScreen:
                 tip_surf.blit(tip, (2, 2))
 
                 self.screen.blit(tip_surf, tip_surf.get_rect(midright = mouse_pos)) 
-                #pygame.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
-            
-            
+
+    def trigger_easter_egg(self):
+        if self.angle == 0:
+            self.angle = 10
