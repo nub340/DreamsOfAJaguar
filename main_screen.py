@@ -23,11 +23,11 @@ class MainScreen:
         self.intro_background_fwd = True
 
         #self.shimmer_surf = pygame.Surface((20, 100), pygame.SRCALPHA)
-        self.shimmer_surf = pygame.image.load('graphics/effect.layer.lg.png').convert_alpha()
+        self.shimmer_surf = pygame.image.load('graphics/alpha.shimmer.png').convert_alpha()
         #self.shimmer_surf.fill('gray')
         #self.shimmer_surf = pygame.transform.rotate(self.shimmer_surf, 135)
         self.shimmer_x = -150
-        self.shimmer_speed = 1
+        self.shimmer_speed = 10
         self.shimmer_rect = self.shimmer_surf.get_rect(topleft = (self.shimmer_x, 10))
         self.shimmer_mask = pygame.mask.from_surface(self.shimmer_surf)
 
