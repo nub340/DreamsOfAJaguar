@@ -57,7 +57,7 @@ class Game():
         self.bg_sky_offset = 0
 
         # Intro screen
-        self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large, self.tip_font)
+        self.main_screen = None
 
         # Timer
         self.enemy_timer = pygame.USEREVENT + 1
@@ -75,7 +75,7 @@ class Game():
 
     def display_score(self):
         current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
-        self.score_surf = self.game_font.render(f'Score: {current_time}', False, (64, 64, 64))
+        self.score_surf = self.game_font.render(f'Score: {current_time}', False, (113, 6, 115))
         self.score_rect = self.score_surf.get_rect(center = (400, 50))
         self.screen.blit(self.score_surf, self.score_rect)
         return current_time
@@ -161,7 +161,7 @@ class Game():
                     pygame.quit()
                     exit()
 
-                if self.game_active and not self.paused:
+                if self.game_active:
                     if event.type == self.enemy_timer:
                         unit_types = []
                         if units['air']: unit_types.append('air')
@@ -179,7 +179,8 @@ class Game():
                         pygame.quit()
                         exit()
 
-                elif not self.paused:
+                else:
+
                     if event.type == pygame.KEYDOWN:
 
                         if konami == 0 and event.key == konami_code[konami_index]:
@@ -195,11 +196,12 @@ class Game():
                         if event.key == pygame.K_SPACE:
                             self.start_time = int(pygame.time.get_ticks() / 1000)
                             self.game_active = True
+                            self.main_screen = None
 
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         self.main_screen.mouse_clicked()
 
-            if self.game_active and not self.paused:
+            if self.game_active:
                 self.set_game_music('in_game')
                 self.draw_environment_layers()
                 self.score = self.display_score()
@@ -222,7 +224,10 @@ class Game():
 
             else:
                 self.set_game_music('intro')
-                self.main_screen.draw(self.prev_score, self.score, self.high_score, konami)
+
+                if not self.main_screen:
+                    self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score)
+                self.main_screen.draw(konami)
                 
             pygame.display.update()
             self.clock.tick(60)
