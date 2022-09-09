@@ -26,15 +26,13 @@ class MainScreen:
         self.shimmer_surf = pygame.image.load('graphics/alpha.shimmer.png').convert_alpha()
         #self.shimmer_surf.fill('gray')
         #self.shimmer_surf = pygame.transform.rotate(self.shimmer_surf, 135)
-        self.shimmer_x = -150
-        self.shimmer_speed = 10
+        self.shimmer_x = -50
+        self.shimmer_speed = 1
         self.shimmer_rect = self.shimmer_surf.get_rect(topleft = (self.shimmer_x, 10))
         self.shimmer_mask = pygame.mask.from_surface(self.shimmer_surf)
 
         self.dreamy_color = '#f786f9'
-        self.game_title_surf = self.make_dreamy(
-            self.large_font.render('Dream of a Jaguar', False, (113, 6, 115)), 
-            self.dreamy_color, 0, 4)
+        self.game_title_surf = self.large_font.render('Dream of a Jaguar', False, (113, 6, 115))
         self.game_title_mask = pygame.mask.from_surface(self.game_title_surf)
         self.game_title_rect = self.game_title_surf.get_rect(center = (400, 50))
 
@@ -196,20 +194,24 @@ class MainScreen:
         self.screen.blit(self.intro_background, (self.intro_background_offset, 0)) 
 
         # game title
-        self.game_title_surf = self.make_dreamy(
-            self.large_font.render('Dream of a Jaguar', False, (113, 6, 115)), 
-            self.dreamy_color, 0, 4)
-        self.screen.blit(self.game_title_surf, self.game_title_rect)
+        # self.game_title_surf = self.large_font.render('Dream of a Jaguar', False, (113, 6, 115))
+        border_width = 0
+        blur_radius = 4
+        dreamy_game_title_surf = self.make_dreamy(self.game_title_surf, self.dreamy_color, border_width, blur_radius)
+        self.screen.blit(dreamy_game_title_surf, dreamy_game_title_surf.get_rect(center = (400, 50)))
         
         # animate shimmer rect
+        keys_pressed = pygame.key.get_pressed()
+        if keys_pressed[pygame.K_LEFT]:
+            self.shimmer_rect.x -= self.shimmer_speed*2
         if self.shimmer_rect.x < 1000:
             self.shimmer_rect.x += self.shimmer_speed
         else:
             self.shimmer_rect.x = -150
             
         # game title shimmer
-        offset_x = self.game_title_rect.x - self.shimmer_rect.left
-        offset_y = self.game_title_rect.y - self.shimmer_rect.top     
+        offset_x = (self.game_title_rect.x - self.shimmer_rect.left) #+ (blur_radius**2) + border_width
+        offset_y = (self.game_title_rect.y - self.shimmer_rect.top) #+ (blur_radius**2) + border_width
         if (self.shimmer_rect.colliderect(self.game_title_rect)
             and self.shimmer_mask.overlap(self.game_title_mask, (offset_x, offset_y))):
             new_mask = self.shimmer_mask.overlap_mask(self.game_title_mask, (offset_x, offset_y))
@@ -224,7 +226,8 @@ class MainScreen:
 
             #new_surface.set_alpha(200)
             new_surface = self.make_dreamy(new_surface, 'purple', 2, 2)
-            self.screen.blit(new_surface, (self.shimmer_rect.x-3, self.shimmer_rect.y-3))
+            #self.screen.blit(new_surface, (self.shimmer_rect.x, self.shimmer_rect.y))
+            self.screen.blit(new_surface, new_surface.get_rect(topleft = (self.shimmer_rect.left-6, self.shimmer_rect.top-6)))
 
         # high score 
         self.screen.blit(self.high_score_surf, self.high_score_rect)
