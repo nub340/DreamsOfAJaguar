@@ -22,11 +22,12 @@ class MainScreen:
         self.intro_background_offset = 0
         self.intro_background_fwd = True
 
-        self.shimmer_surf = pygame.Surface((20, 400))
+        self.shimmer_surf = pygame.Surface((20, 100))
         self.shimmer_surf.fill('gray')
         self.shimmer_surf = pygame.transform.rotate(self.shimmer_surf, 135)
         self.shimmer_x = -150
-        self.shimmer_rect = self.shimmer_surf.get_rect(topleft = (self.shimmer_x, 0))
+        self.shimmer_speed = 10
+        self.shimmer_rect = self.shimmer_surf.get_rect(topleft = (self.shimmer_x, 10))
         self.shimmer_mask = pygame.mask.from_surface(self.shimmer_surf)
 
         self.dreamy_color = '#f786f9'
@@ -45,7 +46,7 @@ class MainScreen:
         self.player_surf = pygame.transform.rotozoom(self.player_surf,0,2)
         self.player_rect = self.player_surf.get_rect(center = (400, 220))
 
-        self.bottom_bar_surf = pygame.Surface((800 , 40))
+        self.bottom_bar_surf = pygame.Surface((800 , 40))#.convert_alpha()
         self.bottom_bar_surf.set_alpha(220)
         self.bottom_bar_surf.fill((200, 200, 200))
         self.bottom_bar_rect = self.bottom_bar_surf.get_rect(bottomleft = (0, 400))
@@ -122,7 +123,7 @@ class MainScreen:
     def make_dreamy(self, input_surf, color = (255, 255, 255), border_width = 2, blur_radius = None):
         
         # create mask surface from mask of input_surf, set black pixels to be transparent
-        input_mask_surf = pygame.mask.from_surface(input_surf).to_surface()
+        input_mask_surf = pygame.mask.from_surface(input_surf).to_surface().convert()
         input_mask_surf.set_colorkey((0,0,0))
 
         # change color of all non-black pixels
@@ -146,7 +147,7 @@ class MainScreen:
         # blit mask surface 9 times, each offset in a different direction relative to the center: 
         # topleft, left, bottomleft, up, center, down, topright, right, bottomright. 
         input_mask_centered_rect = input_mask_surf.get_rect(center = (output_w/2, output_h/2))
-        output_surface = pygame.Surface((output_w, output_h))
+        output_surface = pygame.Surface((output_w, output_h), pygame.SRCALPHA).convert_alpha()
         output_surface.blit(input_mask_surf, (input_mask_centered_rect.x - padding, input_mask_centered_rect.y-padding))
         output_surface.blit(input_mask_surf, (input_mask_centered_rect.x - padding, input_mask_centered_rect.y))
         output_surface.blit(input_mask_surf, (input_mask_centered_rect.x - padding, input_mask_centered_rect.y+padding))
@@ -171,8 +172,6 @@ class MainScreen:
                 image.tobytes("raw", 'RGBA'), 
                 output_surface.get_size(), 
                 'RGBA')
-        else:
-            output_surface.set_colorkey((0,0,0))
 
         # finally, blit the original unaltered input surface centered onto the output_surface
         output_surface.blit(input_surf, input_surf.get_rect(center = (output_w/2, output_h/2)))
@@ -202,11 +201,10 @@ class MainScreen:
         self.screen.blit(self.game_title_surf, self.game_title_rect)
         
         # animate shimmer rect
-        if self.shimmer_rect.x < 5000:
-            self.shimmer_rect.x += 27
+        if self.shimmer_rect.x < 1000:
+            self.shimmer_rect.x += self.shimmer_speed
         else:
             self.shimmer_rect.x = -150
-        #print(self.shimmer_rect.x)
             
         # game title shimmer
         offset_x = self.game_title_rect.x - self.shimmer_rect.left
@@ -214,7 +212,7 @@ class MainScreen:
         if (self.shimmer_rect.colliderect(self.game_title_rect)
             and self.shimmer_mask.overlap(self.game_title_mask, (offset_x, offset_y))):
             new_mask = self.shimmer_mask.overlap_mask(self.game_title_mask, (offset_x, offset_y))
-            new_surface = new_mask.to_surface()
+            new_surface = new_mask.to_surface().convert()
             new_surface.set_colorkey((0, 0, 0))
             
             w, h = new_surface.get_size()
@@ -223,7 +221,7 @@ class MainScreen:
                     if new_surface.get_at((x, y))[0] != 0:
                         new_surface.set_at((x, y), 'white')
 
-            new_surface.set_alpha(200)
+            #new_surface.set_alpha(200)
             new_surface = self.make_dreamy(new_surface, 'purple', 1, 2)
             self.screen.blit(new_surface, (self.shimmer_rect.x-3, self.shimmer_rect.y-3))
 
