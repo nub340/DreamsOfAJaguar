@@ -9,8 +9,6 @@ from enemy import Enemy
 from ai_unit import AIUnit
 from ai_unit_import import get_units
 from main_screen import MainScreen
-import os
-
 
 class Game():
     def __init__(self):
