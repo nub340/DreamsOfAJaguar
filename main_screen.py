@@ -206,7 +206,7 @@ class MainScreen:
             self.shimmer_rect.x += 27
         else:
             self.shimmer_rect.x = -150
-        print(self.shimmer_rect.x)
+        #print(self.shimmer_rect.x)
             
         # game title shimmer
         offset_x = self.game_title_rect.x - self.shimmer_rect.left
