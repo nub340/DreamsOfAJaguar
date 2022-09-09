@@ -22,11 +22,11 @@ class MainScreen:
         self.intro_background_offset = 0
         self.intro_background_fwd = True
 
-        self.shimmer_surf = pygame.Surface((20, 100))
+        self.shimmer_surf = pygame.Surface((20, 100), pygame.SRCALPHA)
         self.shimmer_surf.fill('gray')
         self.shimmer_surf = pygame.transform.rotate(self.shimmer_surf, 135)
         self.shimmer_x = -150
-        self.shimmer_speed = 10
+        self.shimmer_speed = 1
         self.shimmer_rect = self.shimmer_surf.get_rect(topleft = (self.shimmer_x, 10))
         self.shimmer_mask = pygame.mask.from_surface(self.shimmer_surf)
 
@@ -222,7 +222,7 @@ class MainScreen:
                         new_surface.set_at((x, y), 'white')
 
             #new_surface.set_alpha(200)
-            new_surface = self.make_dreamy(new_surface, 'purple', 1, 2)
+            new_surface = self.make_dreamy(new_surface, 'purple', 2, 2)
             self.screen.blit(new_surface, (self.shimmer_rect.x-3, self.shimmer_rect.y-3))
 
         # high score 
