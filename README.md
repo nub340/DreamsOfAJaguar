@@ -70,7 +70,7 @@ The project is oprganized as follows:
 - ```stable-diffusion/``` - directory containing all of the stable diffusion related files and assets. Explained further in detail below.
 
 ## Baked-In Game Assets ##
-We utlilized [midjourney](https://www.midjourney.com/home/) & [Dall-E 2](https://openai.com/dall-e-2/) to help generate the visual assets used in the game. For instance, the main player character was generated via Dall-E 2 using the prompt: ```Ancient Mayan Jaguar Chaac God 16-bit style```. 
+We utlilized [midjourney](https://www.midjourney.com/home/) & [Dall-E 2](https://openai.com/dall-e-2/) to help generate the visual assets used in the game. For instance, the main player character was generated directly via Dall-E 2 with prompt: ```Ancient Mayan Jaguar Chaac God 16-bit style```. 
 
 Using Gimp, we then manually created all of the character image variations including: stand, walk, crouch, jump, walk-attack, jump-attack, and just for fun, crouch-attack :)
 
