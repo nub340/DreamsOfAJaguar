@@ -114,10 +114,10 @@ class MainScreen:
                 # use closure to access state
                 def replace_ground_unit():
                     print(f'Dreaming up new ground unit', unit_no)
-                    regenerate_unit('ground', unit_no)
+                    path = regenerate_unit('ground', unit_no)
                     import_unit('ground', unit_no)
                     self.init_units()
-                    print(f'new ground unit manifested')
+                    print(f'new ground unit manifested', path)
 
                 Thread(target=replace_ground_unit, name=f'gworker{i}').start()
 
