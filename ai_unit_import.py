@@ -1,12 +1,17 @@
 from PIL import Image
 from config import *
-import uuid
 import os
 from sys import argv, exit
+from threading import Thread
+from stable_diffusion.dream import regenerate_unit, clear_dream_dirs, ensure_api_key
 
-def get_imported_units_list(type='air'):
-    dir = f'graphics/units/{type}/'
-    return list(map(lambda p: dir + p, os.listdir(dir)))
+def get_units(type='air'):
+    dir = f'graphics/ai_units/{type}/'
+    return sorted(list(map(lambda p: dir + p, os.listdir(dir))))
+
+def clear_folder(dir):
+    for f in os.listdir(dir):
+        os.remove(os.path.join(dir, f))
 
 def extract_frame(img, frame):
     w, h = img.size
@@ -29,18 +34,44 @@ def extract_frame(img, frame):
     img_out.thumbnail((64, 64), Image.ANTIALIAS)
     return img_out
 
-def process_image(type='air', image_path = None):
+def regenerate_all_units():
+    ensure_api_key()
+
+    clear_folder('graphics/ai_units/air')
+    clear_folder('graphics/ai_units/ground')
+    clear_dream_dirs()
+
+    print('dreaming up new units...')
+    tasks = []
+    for i in range(1, 4):
+
+        thread1 = Thread(target=regenerate_unit, name=f'aworker{i}', args=('air', i))
+        thread1.start()
+        tasks.append(thread1)
+
+        thread2 = Thread(target=regenerate_unit, name=f'gworker{i}', args=('ground', i))
+        thread2.start()
+        tasks.append(thread2)
+
+    for t in tasks:
+        t.join()
+
+    print('dreaming complete!')
+
+def import_unit(type='air', unit_no = None):
     # build a list of images to process
     queue = []
-    if image_path:
-        queue = [image_path]
+    if unit_no:
+        queue = [f'stable_diffusion/{type}/{unit_no}.png']
     else:
-        queue = list(map(lambda p: f'import_units/{type}/' + p, os.listdir(f'import_units/{type}/')))
+        dir = f'stable_diffusion/{type}/'
+        queue = list(map(lambda p: dir + p, os.listdir(dir)))
 
     # process each image in the list...
-    for image_path in queue:
-        img = Image.open(image_path)
+    for image_file in queue:
+        img = Image.open(image_file)
         img = img.convert("RGBA")
+        
 
         # convert the background to alpha 
         datas = img.getdata()
@@ -64,19 +95,22 @@ def process_image(type='air', image_path = None):
         image_out.paste(frame2, (64,0))
         image_out.paste(frame3, (0,64))
         image_out.paste(frame4, (64,64))
-        image_out.save(f'graphics/units/{type}/{uuid.uuid4()}.png', "PNG")
+        
+        image_out.save(f'graphics/ai_units/{type}/{os.path.basename(image_file)}', "PNG")
 
-def process_all_images():
-    process_image('air')
-    process_image('ground')
+def import_all_units():
+    print('importing all ai units...')
+    import_unit('air')
+    import_unit('ground')
+    print('done.')
 
 if __name__ == '__main__':
     if len(argv) == 3:
         type = argv[1]
         file_path = argv[2]
-        process_image(type, file_path)
+        import_unit(type, file_path)
     elif len(argv) == 2:
         type = argv[1]
-        process_image(type)
+        import_unit(type)
     else:
         exit('Incorrect number of arguments specified.')

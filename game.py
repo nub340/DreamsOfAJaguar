@@ -6,22 +6,27 @@ from config import *
 
 from player import Player
 from enemy import Enemy
-from unit_4_frames import Unit4Frames
-from import_units import get_imported_units_list
-import os
+from ai_unit import AIUnit
+from ai_unit_import import get_units
+from main_screen import MainScreen
 
 class Game():
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen_rect = self.screen.get_rect(topleft = (0, 0))
-        pygame.display.set_caption('Jaguar Run')
+        icon = pygame.image.load('graphics/Player/player_icon.png')
+        pygame.display.set_icon(icon)
+        pygame.display.set_caption('Dream of the Jaguar')
         self.clock = pygame.time.Clock()
         self.game_font_large = pygame.font.Font('font/Pixeltype.ttf', 80)
         self.game_font = pygame.font.Font('font/Pixeltype.ttf', 50)
+        self.tip_font = pygame.font.Font('font/Pixeltype.ttf', 25)
         self.game_active = False
         self.start_time = 0
-        pygame.mixer.Sound('audio/legend-of-narmer.mp3').play(loops = -1)
+        pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR))
+        self.game_music = None 
+        self.paused = False
 
         self.score = 0
         self.prev_score = 0
@@ -36,6 +41,10 @@ class Game():
         self.player.add(self.__player__)
 
         self.obstacle_group = pygame.sprite.Group()
+        self.units = {
+            'air': get_units('air'), 
+            'ground': get_units('ground')
+        }
 
         # Background, ground
         self.bg_ground_surface = pygame.image.load('graphics/mayanbg1.png').convert_alpha()
@@ -50,37 +59,35 @@ class Game():
         self.bg_sky_offset = 0
 
         # Intro screen
-        self.intro_background = pygame.image.load('graphics/map2.png').convert_alpha()
-        self.intro_background_offset = 0
-        self.intro_background_fwd = True
-
-        self.player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
-        self.player_stand = pygame.transform.rotozoom(self.player_stand,0,2)
-        self.player_stand_rect = self.player_stand.get_rect(center = (400, 230))
-
-        self.game_name = self.game_font_large.render('Jaguar Run', False, (0, 0, 0))
-        self.game_name_rect = self.game_name.get_rect(center = (400, 80))
-
-        self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
-        self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
-
-        self.game_message = self.game_font.render('Press space to run', False, (0, 0, 0))
-        self.start_rect = self.game_message.get_rect(center = (400, 340))
+        self.main_screen = None
 
         # Timer
         self.enemy_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.enemy_timer, 1500)
 
+    def set_game_music(self, track):
+        if track == 'intro' and self.game_music != 'intro':
+            self.game_music = track
+            pygame.mixer.music.load('audio/legend-of-narmer.mp3')
+            pygame.mixer.music.play(-1)
+        elif track == 'in_game' and self.game_music != 'in_game':
+            self.game_music = track
+            pygame.mixer.music.load('audio/music.wav')
+            pygame.mixer.music.play(-1)
+
     def display_score(self):
         current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
-        self.score_surf = self.game_font.render(f'Score: {current_time}', False, (64, 64, 64))
+        self.score_surf = self.game_font.render(f'Score: {current_time}', False, (113, 6, 115))
         self.score_rect = self.score_surf.get_rect(center = (400, 50))
         self.screen.blit(self.score_surf, self.score_rect)
         return current_time
    
     def collision_sprite(self):
         #return True
-        colliding = pygame.sprite.spritecollide(self.player.sprite, self.obstacle_group, False)
+        colliding = (
+            pygame.sprite.spritecollide(self.player.sprite, self.obstacle_group, False) and 
+            pygame.sprite.spritecollide(self.player.sprite, self.obstacle_group, False, pygame.sprite.collide_mask)
+        )
         if colliding:
             player = self.player.sprites()[0]
             for object in colliding:
@@ -137,19 +144,14 @@ class Game():
         save_file.close()
 
     def run(self):
-        konomi = 0
-        konomi_index = 0
-        konami_code = [
+        code_idx = 0
+        code = [
             pygame.K_UP, pygame.K_UP, 
             pygame.K_DOWN, pygame.K_DOWN, 
             pygame.K_LEFT, pygame.K_RIGHT, 
             pygame.K_LEFT, pygame.K_RIGHT,
             pygame.K_b, pygame.K_a]
-        
-        units = {
-            'air': get_imported_units_list('air'), 
-            'ground': get_imported_units_list('ground')
-        }
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -159,12 +161,13 @@ class Game():
                 if self.game_active:
                     if event.type == self.enemy_timer:
                         unit_types = []
-                        if units['air']: unit_types.append('air')
-                        if units['ground']: unit_types.append('ground')
+                        if self.units['air']: unit_types.append('air')
+                        if self.units['ground']: unit_types.append('ground')
                         if unit_types:
                             type = choice(unit_types)
-                            imported_units = units[type]
-                            self.obstacle_group.add(Unit4Frames(type, choice(imported_units)))
+                            imported_units = self.units[type]
+                            self.obstacle_group.add(
+                                AIUnit(type, choice(imported_units), None, -6))
                         else:
                             self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
 
@@ -173,24 +176,28 @@ class Game():
                         pygame.quit()
                         exit()
 
-                else:
+                else: 
                     if event.type == pygame.KEYDOWN:
 
-                        if konomi == 0 and event.key == konami_code[konomi_index]:
-                            konomi_index += 1
-                            print('konamicode'[konomi_index-1:konomi_index])
-                            if konomi_index == len(konami_code):
-                                konomi = 10
+                        if event.key == code[code_idx]:
+                            code_idx += 1
+                            if code_idx == len(code):
                                 self.player.sprites()[0].death_sound.play()
-                                konomi_index = 0
+                                self.main_screen.trigger_easter_egg()
+                                code_idx = 0
                         else:
-                            konomi_index = 0
+                            code_idx = 0
 
                         if event.key == pygame.K_SPACE:
                             self.start_time = int(pygame.time.get_ticks() / 1000)
                             self.game_active = True
+                            self.main_screen = None
+
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        self.main_screen.mouse_clicked()
 
             if self.game_active:
+                self.set_game_music('intro')
                 self.draw_environment_layers()
                 self.score = self.display_score()
 
@@ -202,6 +209,7 @@ class Game():
 
                 self.game_active = self.collision_sprite()
                 if not self.game_active: 
+
                     self.__player__.reset_start_pos()
                     if self.score > 0:
                         self.prev_score = 0
@@ -210,45 +218,11 @@ class Game():
                     self.save_score(0, self.high_score)
 
             else:
-                self.screen.fill((94, 129, 162))
-                if self.intro_background_fwd:
-                    if self.intro_background_offset < -1000:
-                        self.intro_background_fwd = False
-                    else:
-                        self.intro_background_offset -= 1
-                else: 
-                    if self.intro_background_offset < 0:
-                        self.intro_background_offset += 1
-                    else:
-                        self.intro_background_fwd = True
+                self.set_game_music('intro')
 
-                self.screen.blit(self.intro_background, (self.intro_background_offset, 0))
-                self.screen.blit(self.game_name, self.game_name_rect)
-                
-                self.high_score_msg = self.game_font.render(f'High score: {self.high_score}', False, (0, 0, 0))
-                self.high_score_rect = self.high_score_msg.get_rect(center = (400, 130))
-                self.screen.blit(self.high_score_msg, self.high_score_rect)
-
-                if konomi > 0:
-                    print('Konami activated!', konomi)
-                    player_stand = pygame.transform.rotate(self.player_stand, konomi)
-                    self.screen.blit(player_stand, player_stand.get_rect(center = (400, 250)))
-                    konomi += 10
-                    if konomi >= 360:
-                        konomi = 0
-                else:
-                    self.screen.blit(self.player_stand, self.player_stand_rect)
-
-                self.score_message = self.game_font.render(f'Your score: {self.score}', False, (0, 0, 0))
-                self.score_message_rect = self.score_message.get_rect(center = (400, 340))
-
-                if self.prev_score > 0: game_message = 'Press space to continue...'
-                else: game_message = 'Press space to run' 
-                self.game_message = self.game_font.render(game_message, False, (0, 0, 0))
-                self.start_rect = self.game_message.get_rect(center = (400, 350))
-                
-                if self.score == 0: self.screen.blit(self.game_message, self.start_rect)
-                else: self.screen.blit(self.score_message, self.score_message_rect)
+                if not self.main_screen:
+                    self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score)
+                self.main_screen.draw()
                 
             pygame.display.update()
             self.clock.tick(60)

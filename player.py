@@ -32,7 +32,7 @@ class Player(pygame.sprite.Sprite):
             pygame.image.load('graphics/player/attack_effect_3.png').convert_alpha(),
             pygame.image.load('graphics/player/attack_effect_4.png').convert_alpha()
         ]
-        
+
         self.player_jump = pygame.image.load('graphics/player/player_jump.png').convert_alpha()
         self.player_jump_attack = pygame.image.load('graphics/player/player_jump_attack.png').convert_alpha()
         
@@ -104,32 +104,34 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.image = self.player_jump
 
-        #arm example question
         else:
-            # walking...
+            # attacking
             if self.attack:
                 if self.crouch: 
                     self.player_crouch_attack_index += 0.1
                     if self.player_crouch_attack_index >= len(self.player_crouch_attack): 
                         self.player_crouch_attack_index = 0
                     self.image = self.player_crouch_attack[int(self.player_crouch_attack_index)]
-                else:
+                else: # standing
                     self.player_walk_attack_index += 0.1
                     if self.player_walk_attack_index >= len(self.player_walk_attack): 
                         self.player_walk_attack_index = 0
                     self.image = self.player_walk_attack[int(self.player_walk_attack_index)]
+            # walking...
             else:
                 if self.crouch:
                     self.player_crouch_index += 0.1
                     if self.player_crouch_index >= len(self.player_crouch): 
                         self.player_crouch_index = 0
                     self.image = self.player_crouch[int(self.player_crouch_index)]
-                else:
+                else: # standing
                     self.player_walk_index += 0.1
                     if self.player_walk_index >= len(self.player_walk): 
                         self.player_walk_index = 0
                     self.image = self.player_walk[int(self.player_walk_index)]
+                    self.mask = self.image
 
+            self.mask = pygame.mask.from_surface(self.image)
 
         now = pygame.time.get_ticks()
         if now - self.attack_time < 100:
