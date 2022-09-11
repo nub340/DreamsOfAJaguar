@@ -8,7 +8,7 @@ class AIUnit(pygame.sprite.Sprite):
 
         self.type = type
         self.image_path = image_path
-        self.source_image = pygame.image.load(image_path).convert_alpha()
+        self.source_image = pygame.transform.flip(pygame.image.load(image_path).convert_alpha(), True , False)
         self.velocity = velocity
 
         self.frames = [

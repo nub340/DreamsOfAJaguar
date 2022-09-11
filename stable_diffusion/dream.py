@@ -5,14 +5,38 @@ import sys
 from PIL import Image
 import os
 
+# We are trying to mix image input and prompt input to create unique units. 
+# Currently Using a mask layer you get unwanted rigidity... with some more knowledge I beleve a mask layer or layers can be leveraged for unit "traits" or "level"
+# One image action at a time will 
 # CONFIG ====================
-STABLE_DIFFUSION_PROMPT_GROUND = "facing left , Saber-toothed cat , detailed drawing , 32bit video game , cat walking cycle animation sheet"
-STABLE_DIFFUSION_PROMPT_AIR = "precisely drawn illustration, 4k, drawing of 4 colorful quetzal bird eagle vulture animals, identical, facing left, flying through the air, mid flight, super sharp talons, claws, side view, mayan art style, Monarobot style, high-definition, sharp lines, catching prey"
+STABLE_DIFFUSION_PROMPT_GROUND = " 16bit Large Cat , spots , stripes , booleans , ints , fangs , cat with spots Running Animation Drawing , detailed drawing , 16 bit video game , cat walking cycle animation sheet , animation drawing sheet , walking cat animation sheet , detailed linework , replicate shape"
+STABLE_DIFFUSION_PROMPT_AIR = " bird , red markings , red heads , flapping animation cycle sheet , precisely drawn , 16bit style , detailed drawing , eagle vulture owl , flying animation cycle , mid flight , super sharp talons, claws, side view, mayan art style, Monarobot style, high-definition, sharp lines, catching prey , animation drawing , flying eagle animation sheet , detailed linework , replicate shape"
+
+# ===========================
 STABLE_DIFFUSION_WIDTH=768
 STABLE_DIFFUSION_HEIGHT=768
-STABLE_DIFFUSION_PSTRENGTH=0.8
-STABLE_DIFFUSION_ISTEPS=50
-STABLE_DIFFUSION_GSCALE=7.5
+
+# ===========================
+#PSTRENGTH can be set between .001-1
+# (.001-.655) essentially replicates our init_image  
+# (.666-.955) returns more unpredictable results 
+# (.966-1) returns unique units not speifically following the init_image 
+STABLE_DIFFUSION_PSTRENGTH=.777 
+
+# ===========================
+#ISTEPS can be set between 1-250
+# Higher numbers take longer to process / not specifically better resuts
+# 100 Below seems to get less unique results
+# 160 Can get great results and then poor results. 
+# 200 Seems to return better consistant unique results 
+STABLE_DIFFUSION_ISTEPS=200 
+
+# ===========================
+#GSCALE can be set between 1-20
+# 1-10 will follow init_image more 
+# 10-20 returns more unique units
+STABLE_DIFFUSION_GSCALE=16 
+
 # ===========================
 
 model = replicate.models.get("stability-ai/stable-diffusion")
@@ -46,7 +70,7 @@ def preview_new_unit(type):
 def dream_new_unit(type):
     if type == 'air': 
         prompt = STABLE_DIFFUSION_PROMPT_AIR 
-        init_image = 'stable_diffusion/init_image/bat.png'
+        init_image = 'stable_diffusion/init_image/bird2.png'
         # mask = 'stable_diffusion/init_image/bird2mask.png'
     else: 
         prompt = STABLE_DIFFUSION_PROMPT_GROUND

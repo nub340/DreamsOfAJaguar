@@ -71,6 +71,7 @@ def import_unit(type='air', unit_no = None):
     for image_file in queue:
         img = Image.open(image_file)
         img = img.convert("RGBA")
+        
 
         # convert the background to alpha 
         datas = img.getdata()
