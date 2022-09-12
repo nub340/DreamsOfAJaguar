@@ -29,7 +29,7 @@ Try to survive as long as possible by jumping over, crouching under, and/or atta
 - There may also be a hidden easter egg or two... ;)
 
 ## Regular Mode ##
-Uses only out of the box / baked-in enemy units.
+Uses only out of the box / baked-in enemy units. These units were created via Stable Diffusion via Dream mode and saved. Units in regular mode are static and cannot be changed.
 ```
 pip install pygame
 pip install pillow
@@ -37,7 +37,7 @@ python project.py
 ```
 
 ## _Dream_ Mode ##
-Unlock ability to dynamically generate unique enemy units using stable diffusion
+Unlock ability to dynamically generate new enemy units via stable diffusion
 <br>**requires API KEY from [replicate.com](https://replicate.com)
 ```
 pip install pygame
