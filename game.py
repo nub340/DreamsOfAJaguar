@@ -8,6 +8,7 @@ from player import Player
 from enemy import Enemy
 from import_unit import get_dynamic_units, get_static_units
 from main_screen import MainScreen
+from effects import make_dreamy
 
 class Game():
     def __init__(self, dream_mode):
@@ -83,7 +84,7 @@ class Game():
 
     def display_score(self):
         current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
-        self.score_surf = self.game_font.render(f'Score: {current_time}', False, (113, 6, 115))
+        self.score_surf = make_dreamy(self.game_font.render(f'Score: {current_time}', False, (113, 6, 115)), 'pink', 2, 0)
         self.score_rect = self.score_surf.get_rect(center = (400, 50))
         self.screen.blit(self.score_surf, self.score_rect)
         return current_time
@@ -223,7 +224,7 @@ class Game():
                 self.set_game_music('intro')
 
                 if not self.main_screen:
-                    self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score)
+                    self.main_screen = MainScreen(self.screen, self.dream_mode, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score)
                 self.main_screen.draw()
                 
             pygame.display.update()
