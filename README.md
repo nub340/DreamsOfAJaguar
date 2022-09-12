@@ -24,7 +24,7 @@ Try to survive as long as possible by jumping over, crouching under, and/or atta
 
 - An overall high score is also maintained for your enjoyment.
 
-- There might also be a hidden easter egg... ;)
+- There may also be a hidden easter egg or two... ;)
 
 ## Regular Mode ##
 Uses only out of the box / baked-in enemy units.
@@ -35,7 +35,7 @@ python project.py
 ```
 
 ## Dream Mode ##
-Uses never-before-seen enemy units, dynamically generated via A.I.!
+Uses never-before-seen dynamically generated enemy units via stable diffusion A.I.!
 <br>**requires API KEY from [replicate.com](https://replicate.com)
 ```
 pip install pygame
@@ -57,60 +57,74 @@ python project.py
 
 The project is oprganized as follows:
 - ```project.py``` - the main python file you need to execute to run the game.
-- ```game.py``` - 'Game' class responsible for composing all of the various classes, functions, and capabilities into a cohesive game. 
-- ```player.py``` - 'Player' class responsible for encapsulating all of the player-related attributes and logic.
-- ```enemy.py``` - 'Enemy' class responsible for encapsulating all of the enemy-related attributes and logic.
-- ```main_screen.py``` -  'MainScreen' class responsible for encapsulating all of the main screen related attributes and logic.
-- ```config.py``` - game constants such as gravity, ground height, screen size, player velocity, etc.
+- ```game.py``` - ```Game``` class responsible for composing all of the various classes, functions, and capabilities into a cohesive game. 
+- ```player.py``` - ```Player``` class responsible for encapsulating all of the player-related attributes and logic.
+- ```enemy.py``` - ```Enemy``` class responsible for encapsulating all of the enemy-related attributes and logic.
+- ```main_screen.py``` -  ```MainScreen``` class responsible for encapsulating all of the main screen related attributes and logic.
+- ```config.py``` - configuration constants such as gravity, screen size, player velocity, etc.
 - ```test_project.py``` - tests for verifying everything in ```project.py``` are working as expected.
 - ```README.md``` - **You are here**
 - ```requirements.txt``` - list of pip libraries required
-- ```audio/``` - directory containing all of the sound and music assets
-- ```graphics/``` - directory containing all of the graphical assets in a format suitable for the game to use
-- ```stable-diffusion/``` - directory containing all of the stable diffusion related files and assets. Explained further in detail below.
+- ```audio/``` - directory containing all of the sound and music assets for the game
+- ```graphics/``` - directory containing all of the graphical assets for the game
+- ```stable-diffusion/``` - directory containing all of the stable diffusion related files and assets. Explained in further detail below.
 
 ## Baked-In Game Assets ##
-We utlilized [midjourney](https://www.midjourney.com/home/) & [Dall-E 2](https://openai.com/dall-e-2/) to help generate the visual assets used in the game. For instance, the main player character was generated directly via Dall-E 2 with prompt: ```Ancient Mayan Jaguar Chaac God 16-bit style```. 
+We utlilized [midjourney](https://www.midjourney.com/home/) & [Dall-E 2](https://openai.com/dall-e-2/) to help generate a lot of the visual assets used in the game. For instance, the main player character was generated via [Dall-E 2](https://openai.com/dall-e-2/) with th prompt: ```Ancient Mayan Jaguar Chaac God 16-bit style```. 
 
 Using Gimp, we then manually created all of the character image variations including: stand, walk, crouch, jump, walk-attack, jump-attack, and just for fun, crouch-attack :)
 
-The background layers/assets were purchased from here:<br> https://gameartpartners.com/downloads/mayan-temple-game-background/
+The background layers/assets were obtained from here:<br> https://gameartpartners.com/downloads/mayan-temple-game-background/
 
-Music and sound effects were obtained from various free gaming content websites, such as: freesound.org, pixabay.com, and chosic.com.
+Music and sound effects were obtained from various free gaming content websites, such as: [freesound.org](freesound.org), [pixabay.com](pixabay.com), and [chosic.com](chosic.com).
 
-[See asset attributions below](#ca).
+- [Asset attributions below](#ca)
 
-## AI Generated Assets
+## Enemy Units
 
-A.I. generated enemy units need 4 frames so that they can be animated when moving across the screen. Here is an example of how the 4 frames are formatted in a single image: 
+All enemy units are created using 4 frames so that they can be animated when moving across the screen. Here is a hi-res example of a single enemy unit sprite with 4 frames: 
 
 ![four frame sprite example](stable_diffusion/init_image/bird2.png)
 
-In order to generate a random creature and also have the A.I. include four frames (like in the example above), we're leveraging stable diffusion's ```init_image``` feature, which allows you to specify an input image for the A.I. to use to derive a new image from. We manually doctored several ```init_images```, for both air and ground units, which are then randomly selected from when generating new units. We then provide the ```init_image``` , along with a carefully curated prompt, weights, and other settings to making a request to replicate.com via their python library.
+When an ```EnemyUnit``` class is intantiated, the \__init__ method loads and splits a sprite like above into a list of 4 smaller images representing each frame.
 
-When all of the parameters are adjusted just right, it can produce some amazing results! However, it's also very unpredictable and can generate undesirable results. While we strive to refine this technique, we realize it's not fool proof and so we need a way to overcome bad results. Letting the player directly participate and choose their favorite units seemed like a great way to engage the user and expose them to the concept of A.I. generated content, which is part of the fun of the game!
+To animate the frames, the variable ```animation_index``` is used to track which frame to draw. This variable is incremented by ```0.1``` on every iteration of the game loop, and is then passed to ```int()``` to determine which frame to show. This means, we'll get frame ```0``` for ten iterations, then frame ```1``` for ten iterations, and so on until we get to frame ```9``` and start back over at ```0``` again. Adjusting this constant changes the speed of the animation.
+
+#### Collisions ####
+A pygame ```mask``` is used for colision detection. Using a mask allows you to detect if any of the player's non-transparent pixels are touching any of the enemy's non-transparent pixels. Each frame uses a separate mask, as the transparent part is different in each frame.
+
+## "Dreaming" up new units with Stable Diffusion
+To dynamically generate random creates/units that look at least _somewhat_ feasible when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a visual example of exactly what we're looking for. These images are found in the ```/stable-diffusion/init_image``` folder.
+
+You'll notice these example images have 4 frames of the same creature arranged in a 2x2 grid, such that displaying them in sequence would produce an animation. (See image above).
+
+This format has netted us the best results when using Stable Diffusion. Attempting to create multiple frames for the same creature as separate requests to SD would rarely produce images able to be animated in sequence. However, combining all the frames into a single image actually seems to work pretty well, producing content much more consistent and usable. That is, in conjuction with the highly curated text prompt and other settings. When all of these parameters are adjusted just right, it can produce some really amazing results!
+
+#### Player Involvement ####
+ With all that said, this approach is still very unpredictable and can often generate undesirable results. To address this issue, we decided to let the player interact with Stable Diffusion directly by simply clicking on a unit they don't like on the main screen. This will replace the clicked unit with a newly generated unit. The player can repeat this process until they like all of their units, and/or are free to explore and keep generating more just for fun! 
 
 
 ## Game Concept and Development Process ##
 We brainstormed for days before finally settling on a game. At first all we knew was that we wanted it to be ancient Mayan themed and utilize machine learning / A.I. in some novel and fun way.
 
-YouTube has a ton of great pygame tutorials and after watching a bunch we decided to create a super simple side-scrolling "flappy-bird" style game to keep the scope limited.
+YouTube has a ton of great pygame tutorials and after watching a bunch we decided to create a super simple side-scrolling "flappy-bird" style gameplay.
 
 Around the same time we were also heavily experimenting with Dall-E 2, Mid Journey, and Stable Diffusion for producing A.I. generated art from simple text prompts. We decided we wanted to use these A.I. models to help us create some of our game art. Specifically:
 
-- The panning background on the main screen was generated by Mid Journey.
 - The main player character was generated by Dall-E 2 and then hand-edited in Gimp to create all of the needed frames for the animtations.
+- The panning background on the main screen was generated by Mid Journey.
 
 After managing to get stable-diffusion to run locally, we realized we could totally embed stable-diffusion in our game (they're both python) and have our game use it to dynamically generate content, "on the fly"!!!
 
-This proved to be impractical and cumbersome however, not to mention the model files are massive (5-7GB depending on version). Then we discovered [replicate.com](https://replicate.com), which offers a web API for running Stable-Diffusion models in the cloud, as-a-service. This approach seemed to offer better experience.
+However, this proved to be impractical and cumbersome and out of scope for this project, not to mention the model files are massive (5-7GB depending on version). Then we discovered [replicate.com](https://replicate.com), which offers a web API for running Stable-Diffusion models in the cloud, as-a-service. This approach seemed to offer us a feasible and simplified solution.
 
-To enable this feature, sign up for a replicate.com account and get an API KEY. Add this API KEY to your ENV and then run:
+To enable this feature, sign up for a replicate.com account and get an API KEY. Beware it is not free, but the cost is minimal if you don't go too crazy. Add this API KEY to your ENV and then run:
 
 ```
+export REPLICATE_API_TOKEN=<api_key>
 python project.py --dream
 ```
-The game will automatically "dream" up 6 new unique enemy units, 3 flying units, 3 ground units, never before seen by anyone.  This will take a minute depending on internet speed. Once complete, the enemy units will be displayed on the main screen. The player can then click on a unit to replace that one with a newly generated unit. Since the A.I. sometimes generates weird / undesirable results, this engages the player to explore and participate in dynamic A.I. content curation.
+The game will automatically "dream" up 6 new unique enemy units, 3 flying units, 3 ground units. This process can take a minute depending on internet speed. Once complete, the enemy units will be displayed on the main screen. The player can then click on a unit to replace that one with a newly generated unit.
 
 Once you like all of the units that are currently displayed, simply press ```SPACE``` to start a game with the units you just created!
 
@@ -119,7 +133,7 @@ If you want to keep the 6 units you currently have just be sure to run the game 
 python project.py
 ```
 
-This will start the game and utilize the last 6 A.I. genereted units.
+This will start the game and utilize the last 6 A.I. genereted units. Otherwise you'll keep replacing the units on each launch.
 
 
 
