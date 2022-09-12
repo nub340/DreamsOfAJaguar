@@ -5,8 +5,12 @@ from sys import argv, exit
 from threading import Thread
 from stable_diffusion.dream import regenerate_unit, clear_dream_dirs, ensure_api_key
 
-def get_units(type='air'):
-    dir = f'graphics/ai_units/{type}/'
+def get_dynamic_units(type='air'):
+    dir = f'graphics/units_dynamic/{type}/'
+    return sorted(list(map(lambda p: dir + p, os.listdir(dir))))
+
+def get_static_units(type='air'):
+    dir = f'graphics/units_static/{type}/'
     return sorted(list(map(lambda p: dir + p, os.listdir(dir))))
 
 def clear_folder(dir):
@@ -37,8 +41,8 @@ def extract_frame(img, frame):
 def regenerate_all_units():
     ensure_api_key()
 
-    clear_folder('graphics/ai_units/air')
-    clear_folder('graphics/ai_units/ground')
+    # clear_folder('graphics/units_dynamic/air')
+    # clear_folder('graphics/units_dynamic/ground')
     clear_dream_dirs()
 
     print('dreaming up new units...')
@@ -96,10 +100,10 @@ def import_unit(type='air', unit_no = None):
         image_out.paste(frame3, (0,64))
         image_out.paste(frame4, (64,64))
         
-        image_out.save(f'graphics/ai_units/{type}/{os.path.basename(image_file)}', "PNG")
+        image_out.save(f'graphics/units_dynamic/{type}/{os.path.basename(image_file)}', "PNG")
 
 def import_all_units():
-    print('importing all ai units...')
+    print('Importing A.I. generated units...')
     import_unit('air')
     import_unit('ground')
     print('done.')

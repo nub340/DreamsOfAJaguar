@@ -1,6 +1,6 @@
 from project import Game
 from player import Player
-from enemy import Enemy
+from enemy_deprecated import EnemyDeprecated
 import config 
 import os
 import pygame
@@ -33,9 +33,9 @@ def test_player_init():
     assert player
 
 def test_enemy_init():
-    enemy = Enemy('bug')
+    enemy = EnemyDeprecated('bug')
     assert enemy 
-    enemy = Enemy('monkey')
+    enemy = EnemyDeprecated('monkey')
     assert enemy 
 
 def test_save_file():

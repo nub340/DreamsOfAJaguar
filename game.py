@@ -6,13 +6,13 @@ from config import *
 
 from player import Player
 from enemy import Enemy
-from ai_unit import AIUnit
-from ai_unit_import import get_units
+from import_unit import get_dynamic_units, get_static_units
 from main_screen import MainScreen
 
 class Game():
-    def __init__(self):
+    def __init__(self, dream_mode):
         pygame.init()
+        self.dream_mode = dream_mode
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen_rect = self.screen.get_rect(topleft = (0, 0))
         icon = pygame.image.load('graphics/Player/player_icon.png')
@@ -41,10 +41,16 @@ class Game():
         self.player.add(self.__player__)
 
         self.obstacle_group = pygame.sprite.Group()
-        self.units = {
-            'air': get_units('air'), 
-            'ground': get_units('ground')
-        }
+        if get_dynamic_units('air'):
+            self.units = {
+                'air': get_dynamic_units('air'), 
+                'ground': get_dynamic_units('ground')
+            }
+        else:
+            self.units = {
+                'air': get_static_units('air'), 
+                'ground': get_static_units('ground')
+            }
 
         # Background, ground
         self.bg_ground_surface = pygame.image.load('graphics/mayanbg1.png').convert_alpha()
@@ -163,13 +169,9 @@ class Game():
                         unit_types = []
                         if self.units['air']: unit_types.append('air')
                         if self.units['ground']: unit_types.append('ground')
-                        if unit_types:
-                            type = choice(unit_types)
-                            imported_units = self.units[type]
-                            self.obstacle_group.add(
-                                AIUnit(type, choice(imported_units), None, -6))
-                        else:
-                            self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
+                        type = choice(unit_types)
+                        imported_units = self.units[type]
+                        self.obstacle_group.add(Enemy(type, choice(imported_units), None, -6))                    
 
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                         self.save_score(self.score, self.high_score)

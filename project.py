@@ -1,19 +1,23 @@
 from game import Game
 from sys import argv
+import os
 
-from ai_unit_import import regenerate_all_units, import_all_units
+from import_unit import regenerate_all_units, import_all_units
 
-def main(dream):
+def main(dream_mode):
     
-    if dream:
-        regenerate_all_units()
-        import_all_units()
+    # if dream_mode:
+    #     regenerate_all_units()
+    #     import_all_units()
 
-    game = Game()
+    game = Game(dream_mode)
     game.run()
 
 if __name__ == '__main__':
     if len(argv) > 1 and (argv[1] == '--dream' or argv[1] == '-d'):
+        if argv[2]:
+            os.environ["REPLICATE_API_TOKEN"] = argv[2].strip()
+
         main(True)
     else:
         main(False)

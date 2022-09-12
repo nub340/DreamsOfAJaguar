@@ -4,9 +4,9 @@ from threading import Thread
 import pygame
 from PIL import Image, ImageFilter
 
-from ai_unit_import import get_units, import_unit
+from import_unit import get_dynamic_units, import_unit
 from stable_diffusion.dream import regenerate_unit, ensure_api_key
-from ai_unit import AIUnit
+from enemy import Enemy
 
 class MainScreen:
     def __init__(self, screen, font, large_font, tip_font, high_score, score, prev_score):
@@ -59,11 +59,11 @@ class MainScreen:
 
     def init_units(self):
         self.air_units_group = pygame.sprite.Group()
-        self.air_units = get_units('air')
+        self.air_units = get_dynamic_units('air')
         air_units_x = 125
         for i, air_unit_image_path in enumerate(sorted(self.air_units)):
             self.air_units_group.add(
-                AIUnit(
+                Enemy(
                     'air', 
                     air_unit_image_path, 
                     (air_units_x, ((i + 1) * 80)+100)))
@@ -71,12 +71,12 @@ class MainScreen:
             else: air_units_x += 40
 
         self.ground_units_group = pygame.sprite.Group()
-        self.ground_units = get_units('ground')
+        self.ground_units = get_dynamic_units('ground')
         ground_units_x = 675
         self.angle = 0
         for i, ground_unit in enumerate(self.ground_units):
             self.ground_units_group.add(
-                AIUnit(
+                Enemy(
                     'ground', 
                     ground_unit, 
                     (ground_units_x, ((i + 1) * 80)+100)))
