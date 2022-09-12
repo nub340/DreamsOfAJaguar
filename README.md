@@ -17,8 +17,9 @@ Try to survive as long as possible by jumping over, crouching under, and/or atta
 - Save & Exit - ```ESCAPE```
 
 ## Features ##
-- Generate brand new, never before seen enemy A.I. units!
-<br>**requires API KEY from [replicate.com](https://replicate.com)
+- Create infinately unique enemy units using Stable Diffusion A.I.
+    - Just click on the units on the main screen
+    - requires API KEY from [replicate.com](https://replicate.com)
 
 - Pressing ```ESCAPE``` during gameplay will save your game and exit. The next time you run the game your previous game will be restored for you to continue playing. 
 
