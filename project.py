@@ -15,7 +15,7 @@ def main(dream_mode):
 
 if __name__ == '__main__':
     if len(argv) > 1 and (argv[1] == '--dream' or argv[1] == '-d'):
-        if argv[2]:
+        if len(argv) > 2 and argv[2]:
             os.environ["REPLICATE_API_TOKEN"] = argv[2].strip()
 
         main(True)
