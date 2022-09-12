@@ -22,7 +22,7 @@ class MainScreen:
         self.intro_background_offset = 0
         self.intro_background_fwd = True
 
-        self.shimmer_start_x = -2480
+        self.shimmer_start_x = -2500
         self.shimmer_max_x = 3000
         self.shimmer_speed = 7
         self.shimmer_surf = pygame.image.load('graphics/alpha.shimmer.png').convert_alpha()
