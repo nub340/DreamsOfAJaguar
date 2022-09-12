@@ -17,13 +17,14 @@ Try to survive as long as possible by jumping over, crouching under, and/or atta
 - Save & Exit - ```ESCAPE```
 
 ## Features ##
-- Create infinately unique enemy units using Stable Diffusion A.I.
-    - Just click on the units on the main screen
+- Create endlessly unique enemy units using Stable Diffusion A.I.
+    - Just click a unit on the main screen to generate a new one
     - requires API KEY from [replicate.com](https://replicate.com)
+
 
 - Pressing ```ESCAPE``` during gameplay will save your game and exit. The next time you run the game your previous game will be restored for you to continue playing. 
 
-- An overall high score is also maintained for your enjoyment.
+- An overall high score is also maintained
 
 - There may also be a hidden easter egg or two... ;)
 
@@ -36,7 +37,7 @@ python project.py
 ```
 
 ## _Dream_ Mode ##
-Uses never-before-seen dynamically generated enemy units via stable diffusion A.I.!
+Unlock ability to dynamically generate unique enemy units using stable diffusion
 <br>**requires API KEY from [replicate.com](https://replicate.com)
 ```
 pip install pygame
