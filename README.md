@@ -29,7 +29,7 @@ Try to survive as long as possible by jumping over, crouching under, and/or atta
 - There may also be a hidden easter egg or two... ;)
 
 ## Regular Mode ##
-Uses only out of the box / baked-in enemy units. These units were created via Stable Diffusion in Dream mode and then saved. Enemy units in regular mode are static and cannot be changed.
+Uses only out of the box / baked-in enemy units. These units were created via Stable Diffusion in **Dream Mode** and then saved. Enemy units in **Regular Mode** are static and cannot be changed.
 ```
 pip install pygame
 pip install pillow
@@ -37,19 +37,18 @@ python project.py
 ```
 
 ## _Dream_ Mode ##
-Unlock ability to dynamically generate new enemy units via stable diffusion
+Unlock ability to dynamically generate new enemy units via Stable Diffusion
 <br>**requires API KEY from [replicate.com](https://replicate.com)
 ```
 pip install pygame
 pip install pillow
 pip install replicate
 export REPLICATE_API_TOKEN=<api_key>
-```
-...and then, to auto-generate and load 6 new A.I. units:
-```
 python project.py --dream
 ```
-Or to just use the previously generated set of units:
+This will launch the game and generate six all-new enemy units, replacing any previously generated units in the process.
+
+To launch the game using the previously generated units, just run:
 ```
 python project.py
 ```
@@ -72,25 +71,41 @@ The project is oprganized as follows:
 - ```stable-diffusion/``` - directory containing all of the stable diffusion related files and assets. Explained in further detail below.
 
 ## Baked-In Game Assets ##
-We utlilized [midjourney](https://www.midjourney.com/home/) & [Dall-E 2](https://openai.com/dall-e-2/) to help generate a lot of the visual assets used in the game. For instance, the main player character was generated via [Dall-E 2](https://openai.com/dall-e-2/) with th prompt: ```Ancient Mayan Jaguar Chaac God 16-bit style```. 
+We utlilized [midjourney](https://www.midjourney.com/home/) & [Dall-E 2](https://openai.com/dall-e-2/) to help generate a lot of the visual assets used in the game. 
 
-Using Gimp, we then manually created all of the character image variations including: stand, walk, crouch, jump, walk-attack, jump-attack, and just for fun, crouch-attack :)
+### Player ###
+The main player character was generated via [Dall-E 2](https://openai.com/dall-e-2/) with th prompt: ```Ancient Mayan Jaguar Chaac God 16-bit style```.
 
-The background layers/assets were obtained from here:<br> https://gameartpartners.com/downloads/mayan-temple-game-background/
+Using Gimp, we then manually created all of the character image variations including: stand, walk, attack, jump, jump-attack, crouch, and just for fun, crouch-attack :)
 
+<img src="graphics/player/player_stand.png">
+<img src="graphics/player/player_walk_1.png">
+<img src="graphics/player/player_attack_1.png">
+
+<img src="graphics/player/player_jump.png">
+<img src="graphics/player/player_jump_attack.png">
+
+<img src="graphics/player/player_crouch.png">
+<img src="graphics/player/player_crouch_attack.png">
+<br><br>
+
+### Background Layers ###
+
+The parallax scrolling background assets were obtained from:<br> https://gameartpartners.com/downloads/mayan-temple-game-background/
+
+### Audio ###
 Music and sound effects were obtained from various free gaming content websites, such as: [freesound.org](freesound.org), [pixabay.com](pixabay.com), and [chosic.com](chosic.com).
 
 - [Asset attributions below](#ca)
 
 ## Enemy Units
 
-All enemy units are created using 4 frames so that they can be animated when moving across the screen. Here is a hi-res example of a single enemy unit sprite with 4 frames: 
+All enemy units in Dreams of a Jaguar are created from a single image "sprite" containing 4 frames of the same creature arranged in a 2x2 grid such that displaying them in sequence would produce an animation. Here is a hi-res example of a single enemy unit sprite containing 4 frames: 
 
 <img src="stable_diffusion/init_image/bird2.png" alt="four frame sprite example" width="500" height="500"/>
+<br><br>
 
-Notice the image has 4 frames of the same creature arranged in a 2x2 grid, such that displaying them in sequence would produce an animation.
-
-When an ```EnemyUnit``` class is intantiated, the \__init__ method loads a sprite like this and splits it into a list of 4 smaller images representing each frame.
+When an ```EnemyUnit``` class is intantiated, the \__init__ method loads the corresponding image sprite and splits it up into a list of 4 smaller images representing each frame.
 
 To animate the frames, the variable ```animation_index``` is used to track which frame to draw. This variable is incremented by ```0.1``` on every iteration of the game loop, and is then passed to ```int()``` to determine which frame to show. This means, we'll get frame ```0``` for ten iterations, then frame ```1``` for ten iterations, and so on until we get to frame ```9``` and start back over at ```0``` again. Adjusting this constant changes the speed of the animation.
 
@@ -116,7 +131,7 @@ Around the same time we were also heavily experimenting with Dall-E 2, Mid Journ
 - The main player character was generated by Dall-E 2 and then hand-edited in Gimp to create all of the needed frames for the animtations.
 - The panning background on the main screen was generated by Mid Journey.
 
-However, after managing to get stable-diffusion to run locally, we realized we could totally embed stable-diffusion in our game (they're both python) and have our game use it to generate content dynamically on-the-fly!!!
+However, after managing to get stable-diffusion running locally, we realized we could totally embed stable-diffusion in our game (they're both python) and have our game use it to generate content dynamically on-the-fly!!!
 
 While still a very intruging idea, and one we will undoubtably continue to pursue, this quickly proved to be cumbersome and out of scope for this project. Not to mention, the model files are like 5-7GB depending on version. 
 
@@ -132,26 +147,23 @@ The game will automatically "dream" up 6 new unique enemy units, 3 flying units,
 
 Once you like all of the units that are currently displayed, simply press ```SPACE``` to start a game with the units you just created!
 
-If you want to keep the 6 units you currently have just be sure to run the game again without the ```--dream``` switch:
+If you want to keep the units you currently have be sure to run the game _**without**_ the ```--dream``` switch:
 ```
 python project.py
 ```
 
-This will start the game and utilize the last 6 A.I. genereted units. Otherwise you'll keep replacing the units on each launch.
+This will start the game using the previously genereted units.
 
 
 
-## Background Animation ##
-The intro screen background was generated via Midjourney.
+## Background Animations ##
+The Main screen background was generated via Midjourney.
 
 We discussed several ideas for the game background while playing, including additional A.I. generated art, but after finding the background assets linked to above, we decided we decided to go with a parallax scrolling background because the assets looked great, fit our needs, and because we've always wanted to learn how to do parallax scrolling. This was very satisfying to implement and to see working!
 
 ## Gameplay ##
 The game started out as a simple "flappy-bird"-style game where you just jump over enemies. However, we added additional gameplay functionality to make the game more fun. This included the ability to move forwards & backwards, crouching, and attacking. We also added attack effects, sounds, high score, game persitence, and various other little tweaks :)
 
-
-
-## Installation ##
 
 ## Asset Attibution...
 <a name="ca"></a>
