@@ -5,14 +5,19 @@ import sys
 from PIL import Image
 import os
 
-# We are trying to mix image input and prompt input to create unique units. 
-# Currently Using a mask layer you get unwanted rigidity... with some more knowledge I beleve a mask layer or layers can be leveraged for unit "traits" or "level"
-# One image action at a time will 
+# We are mixing image input and prompt input to create unique units. 
+# Mask feature is disabled because you get unwanted rigidity. 
+# With some more knowledge I beleve the mask layer can be leveraged for unit traits & levels.
+
 # CONFIG ====================
-STABLE_DIFFUSION_PROMPT_GROUND = " 16bit Large Cat , spots , stripes , booleans , ints , fangs , cat with spots Running Animation Drawing , detailed drawing , 16 bit video game , cat walking cycle animation sheet , animation drawing sheet , walking cat animation sheet , detailed linework , replicate shape"
-STABLE_DIFFUSION_PROMPT_AIR = " bird , red markings , red heads , flapping animation cycle sheet , precisely drawn , 16bit style , detailed drawing , eagle vulture owl , flying animation cycle , mid flight , super sharp talons, claws, side view, mayan art style, Monarobot style, high-definition, sharp lines, catching prey , animation drawing , flying eagle animation sheet , detailed linework , replicate shape"
+STABLE_DIFFUSION_PROMPT_GROUND = " 16bit Colorful Neon stripes Large Cat , striped tiger orange , stripes , booleans , ints , fangs , cat with spots Running Animation Drawing , detailed drawing , 16 bit video game , cat walking cycle animation sheet , animation drawing sheet , walking cat animation sheet , detailed linework , replicate shape"
+STABLE_DIFFUSION_PROMPT_AIR = " pterodactyl , neon color bird , raptor , dinosaur , must have red markings , must have red heads , flapping animation cycle sheet , precisely drawn , 16bit style , detailed drawing , eagle vulture owl , flying animation cycle , mid flight , super sharp talons, claws, side view, mayan art style, Monarobot style, high-definition, sharp lines, catching prey , animation drawing , flying eagle animation sheet , detailed linework , replicate shape"
 
 # ===========================
+# Image is a four cell animation sheet  
+# Each cell has a frame of animaiton 
+# Image must have white background for the alpha layers to work properly
+# Animation sheets are all going right so we had to flip the output for the game.
 STABLE_DIFFUSION_WIDTH=768
 STABLE_DIFFUSION_HEIGHT=768
 
@@ -89,7 +94,7 @@ def dream_new_unit(type):
                 guidance_scale=STABLE_DIFFUSION_GSCALE,
                 init_image=open(init_image, "rb"))
                 #mask=open(mask, "rb"))
-
+            #print(output)
             attempts = 3
 
         except Exception as e:
