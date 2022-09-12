@@ -79,14 +79,14 @@ The main player character was generated via [Dall-E 2](https://openai.com/dall-e
 Using Gimp, we then manually created all of the character image variations including: stand, walk, attack, jump, jump-attack, crouch, and just for fun, crouch-attack :)
 
 <img alt="player standing" src="graphics/Player/player_stand.png"/>
-<img alt="player walking" src="graphics/player/player_walk_1.png"/>
-<img alt="player attacking" src="graphics/player/player_attack_1.png"/>
+<img alt="player walking" src="graphics/Player/player_walk_1.png"/>
+<img alt="player attacking" src="graphics/Player/player_attack_1.png"/>
 
-<img alt="player jumping" src="graphics/player/player_jump.png"/>
-<img alt="player jump-attacking" src="graphics/player/player_jump_attack.png"/>
+<img alt="player jumping" src="graphics/Player/player_jump.png"/>
+<img alt="player jump-attacking" src="graphics/Player/player_jump_attack.png"/>
 
-<img alt="player crouching" src="graphics/player/player_crouch.png"/>
-<img alt="player crouch-attacking" src="graphics/player/player_crouch_attack.png"/>
+<img alt="player crouching" src="graphics/Player/player_crouch.png"/>
+<img alt="player crouch-attacking" src="graphics/Player/player_crouch_attack.png"/>
 <br><br>
 
 ### Background Layers ###
