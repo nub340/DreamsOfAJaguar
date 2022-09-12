@@ -29,7 +29,7 @@ Try to survive as long as possible by jumping over, crouching under, and/or atta
 - There may also be a hidden easter egg or two... ;)
 
 ## Regular Mode ##
-Uses only out of the box / baked-in enemy units. These units were created via Stable Diffusion via Dream mode and saved. Units in regular mode are static and cannot be changed.
+Uses only out of the box / baked-in enemy units. These units were created via Stable Diffusion in Dream mode and then saved. Units in regular mode are static and cannot be changed.
 ```
 pip install pygame
 pip install pillow
