@@ -111,7 +111,7 @@ class Game():
 
     def draw_environment_layers(self):
         if self.bg_ground_offset <= -499: self.bg_ground_offset = 0
-        else: self.bg_ground_offset -= 1 * BG_ANIMATION_SPEED_MAGNITUDE
+        else: self.bg_ground_offset -= .7 * BG_ANIMATION_SPEED_MAGNITUDE
         
         if self.bg_trees_offset <= -499: self.bg_trees_offset = 0
         else: self.bg_trees_offset -= 0.25 * BG_ANIMATION_SPEED_MAGNITUDE
