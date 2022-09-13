@@ -29,10 +29,10 @@ class Enemy(pygame.sprite.Sprite):
         self.mask = self.masks[int(self.animation_index)]
 
         if type == 'air':
-            if not loc: self.loc = (randint(900, 1100), randint(200, 270))
+            if not loc: self.loc = (randint(900, 1100), randint(220, 290))
             self.rect = self.image.get_rect(midbottom = self.loc)
         else:
-            if not loc: self.loc = (randint(900, 1100), GROUND_Y+35)
+            if not loc: self.loc = (randint(900, 1100), GROUND_Y+15)
             self.rect = self.image.get_rect(midbottom = self.loc)
 
     def animate(self, mouse_pos):
