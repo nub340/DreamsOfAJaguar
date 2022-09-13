@@ -18,7 +18,7 @@ class Game():
         self.screen_rect = self.screen.get_rect(topleft = (0, 0))
         icon = pygame.image.load('graphics/Player/player_icon.png')
         pygame.display.set_icon(icon)
-        pygame.display.set_caption('Dream of the Jaguar')
+        pygame.display.set_caption('Dreams of a Jaguar')
         self.clock = pygame.time.Clock()
         self.game_font_large = pygame.font.Font('font/Pixeltype.ttf', 80)
         self.game_font = pygame.font.Font('font/Pixeltype.ttf', 50)
