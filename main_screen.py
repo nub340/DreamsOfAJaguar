@@ -107,7 +107,8 @@ class MainScreen:
                 self.init_units()
                 print(f'new units manifested')
                 self.bg_task_lock['all'] = False
-                pygame.mixer.Sound('audio/bump2.mp3').play()
+                for _ in range(6):
+                    pygame.mixer.Sound('audio/mixkit-magic-sweep-game-trophy-257.wav').play()
 
             if all(value == False for value in self.bg_task_lock.values()):
                 self.bg_task_lock['all'] = True
@@ -127,7 +128,7 @@ class MainScreen:
                         self.init_units()
                         print(f'new air unit manifested:', path)
                         self.bg_task_lock[f'a{i}'] = False
-                        pygame.mixer.Sound('audio/bump2.mp3').play()
+                        pygame.mixer.Sound('audio/mixkit-magic-sweep-game-trophy-257.wav').play()
 
                     if not self.bg_task_lock[f'a{i}']:
                         self.bg_task_lock[f'a{i}'] = True
@@ -147,7 +148,7 @@ class MainScreen:
                         self.init_units()
                         print(f'new ground unit manifested', path)
                         self.bg_task_lock[f'g{i}'] = False
-                        pygame.mixer.Sound('audio/bump2.mp3').play()
+                        pygame.mixer.Sound('audio/mixkit-magic-sweep-game-trophy-257.wav').play()
 
                     if not self.bg_task_lock[f'g{i}']:
                         self.bg_task_lock[f'g{i}'] = True
