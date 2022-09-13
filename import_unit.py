@@ -44,8 +44,6 @@ def regenerate_all_units():
     # clear_folder('graphics/units_dynamic/air')
     # clear_folder('graphics/units_dynamic/ground')
     clear_dream_dirs()
-
-    print('dreaming up new units...')
     tasks = []
     for i in range(1, 4):
 
@@ -59,8 +57,6 @@ def regenerate_all_units():
 
     for t in tasks:
         t.join()
-
-    print('dreaming complete!')
 
 def import_unit(type='air', unit_no = None):
     # build a list of images to process

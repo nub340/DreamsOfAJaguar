@@ -39,8 +39,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.player_walk[self.player_walk_index]
         self.reset_start_pos()
         
-        self.jump_sound = pygame.mixer.Sound('audio/sfx_jump_07-80241.mp3')
-        self.jump_sound.set_volume(0.1)
+        self.jump_sound = pygame.mixer.Sound('audio/mixkit-player-jumping-in-a-video-game-2043.wav')
+        self.jump_sound.set_volume(0.5)
 
         self.death_sound = pygame.mixer.Sound('audio/gasp-uuh-85993.mp3')
         self.death_sound.set_volume(0.2)
