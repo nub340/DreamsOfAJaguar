@@ -43,7 +43,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_sound.set_volume(0.5)
 
         self.death_sound = pygame.mixer.Sound('audio/gasp-uuh-85993.mp3')
-        self.death_sound.set_volume(0.2)
+        self.death_sound.set_volume(0.5)
 
         self.swish_sound = pygame.mixer.Sound('audio/slash-whoosh.mp3')
         self.swish_sound.set_volume(0.2)

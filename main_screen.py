@@ -207,6 +207,7 @@ class MainScreen:
         # high score 
         self.screen.blit(self.high_score_surf, self.high_score_rect)
 
+        # high score shimmer
         offset_x = (self.high_score_rect.x - self.shimmer_rect.left)
         offset_y = (self.high_score_rect.y - self.shimmer_rect.top)
         if (self.shimmer_rect.colliderect(self.high_score_rect)

@@ -12,6 +12,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image_path = image_path
         self.source_image = pygame.transform.flip(pygame.image.load(image_path).convert_alpha(), True , False)
         self.velocity = velocity
+        self.loc = loc
 
         self.frames = [
             pygame.transform.scale(self.source_image.subsurface((0, 0, 96, 96)), (96, 96)),
@@ -44,6 +45,9 @@ class Enemy(pygame.sprite.Sprite):
         if mouse_pos and self.rect.collidepoint(mouse_pos):
             self.image = make_dreamy(self.image, 'purple', 0, 4)
             self.mask = pygame.mask.from_surface(self.image)
+            self.rect = self.image.get_rect(midbottom = (self.loc[0], self.loc[1]+8))
+        else:
+            self.rect = self.image.get_rect(midbottom = self.loc)
 
     def update(self, mouse_pos = None):
         self.rect.x += self.velocity
