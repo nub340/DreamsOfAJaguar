@@ -59,7 +59,6 @@ class Player(pygame.sprite.Sprite):
         self.velocity = 10
         self.attack = False
         self.crouch = False
-        self.attack_time = 0
         self.rect = self.image.get_rect(midbottom = (80, GROUND_Y))
 
     def player_input(self):
@@ -73,12 +72,15 @@ class Player(pygame.sprite.Sprite):
         else: self.crouch = False
 
         if keys[pygame.K_SPACE]:
-            self.attack = True 
-            if (pygame.time.get_ticks() - self.swish_sound_start_time) > (self.swish_sound.get_length() * 1000):
+            if None ==self.attack:
+                self.attack = pygame.time.get_ticks()
                 self.swish_sound.play()
-                self.swish_sound_start_time = pygame.time.get_ticks()
+                self.swish_sound_start_time = self.attack
+
+            elif pygame.time.get_ticks() - self.attack > 300:
+                self.attack = 0
         else:
-            self.attack = False
+            self.attack = None
 
         if keys[pygame.K_RIGHT]:
             if self.rect.right + PLAYER_VELOCITY > 800: 
@@ -97,16 +99,17 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = GROUND_Y
 
     def animate(self):
+        now = pygame.time.get_ticks()
         if self.rect.bottom < GROUND_Y: 
             # jumping...
-            if self.attack:
+            if self.attack and self.attack > 0:
                 self.image = self.player_jump_attack
             else:
                 self.image = self.player_jump
 
         else:
             # attacking
-            if self.attack:
+            if self.attack and self.attack > 0:
                 if self.crouch: 
                     self.player_crouch_attack_index += 0.1
                     if self.player_crouch_attack_index >= len(self.player_crouch_attack): 
@@ -133,8 +136,7 @@ class Player(pygame.sprite.Sprite):
 
             self.mask = pygame.mask.from_surface(self.image)
 
-        now = pygame.time.get_ticks()
-        if now - self.attack_time < 100:
+        if self.attack and pygame.time.get_ticks() - self.attack < 100:
             attack_effect_surface = self.player_attack_effect[randint(0, 3)]
             attack_rect = attack_effect_surface.get_rect(midleft = self.rect.midright)
             pygame.display.get_surface().blit(attack_effect_surface, attack_rect)
