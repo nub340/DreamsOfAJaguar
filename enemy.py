@@ -14,10 +14,10 @@ class Enemy(pygame.sprite.Sprite):
         self.velocity = velocity
 
         self.frames = [
-            pygame.transform.scale(self.source_image.subsurface((0, 0, 64, 64)), (96, 96)),
-            pygame.transform.scale(self.source_image.subsurface((64, 0, 64, 64)), (96, 96)),
-            pygame.transform.scale(self.source_image.subsurface((0, 64, 64, 64)), (96, 96)),
-            pygame.transform.scale(self.source_image.subsurface((64, 64, 64, 64)), (96, 96))]
+            pygame.transform.scale(self.source_image.subsurface((0, 0, 96, 96)), (96, 96)),
+            pygame.transform.scale(self.source_image.subsurface((96, 0, 96, 96)), (96, 96)),
+            pygame.transform.scale(self.source_image.subsurface((0, 96, 96, 96)), (96, 96)),
+            pygame.transform.scale(self.source_image.subsurface((96, 96, 96, 96)), (96, 96))]
         
         self.masks = []
         for f in self.frames:

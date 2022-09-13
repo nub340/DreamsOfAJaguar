@@ -35,7 +35,7 @@ def extract_frame(img, frame):
     img_out.paste(img_frame, (
         int((tile_size[0]-img_frame.size[0])/2), 
         int((tile_size[1]-img_frame.size[1])/2)))
-    img_out.thumbnail((64, 64), Image.ANTIALIAS)
+    img_out.thumbnail((96, 96), Image.ANTIALIAS)
     return img_out
 
 def regenerate_all_units():
@@ -72,7 +72,6 @@ def import_unit(type='air', unit_no = None):
         img = Image.open(image_file)
         img = img.convert("RGBA")
         
-
         # convert the background to alpha 
         datas = img.getdata()
         newData = []
@@ -90,11 +89,11 @@ def import_unit(type='air', unit_no = None):
         frame4 = extract_frame(img, 4)
 
         # combine the 4 frames back into a single image in a format suitable for the game to use
-        image_out = Image.new(mode="RGBA", size=(128, 128))
+        image_out = Image.new(mode="RGBA", size=(192, 192))
         image_out.paste(frame1, (0,0))
-        image_out.paste(frame2, (64,0))
-        image_out.paste(frame3, (0,64))
-        image_out.paste(frame4, (64,64))
+        image_out.paste(frame2, (96,0))
+        image_out.paste(frame3, (0,96))
+        image_out.paste(frame4, (96,96))
         
         image_out.save(f'graphics/units_dynamic/{type}/{os.path.basename(image_file)}', "PNG")
 
