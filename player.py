@@ -59,6 +59,7 @@ class Player(pygame.sprite.Sprite):
         self.velocity = 10
         self.attack = False
         self.crouch = False
+        self.attack_time = 0
         self.rect = self.image.get_rect(midbottom = (80, GROUND_Y))
 
     def player_input(self):
@@ -136,7 +137,7 @@ class Player(pygame.sprite.Sprite):
 
             self.mask = pygame.mask.from_surface(self.image)
 
-        if self.attack and pygame.time.get_ticks() - self.attack < 100:
+        if pygame.time.get_ticks() - self.attack_time < 100:
             attack_effect_surface = self.player_attack_effect[randint(0, 3)]
             attack_rect = attack_effect_surface.get_rect(midleft = self.rect.midright)
             pygame.display.get_surface().blit(attack_effect_surface, attack_rect)
