@@ -93,7 +93,6 @@ def dream_new_unit(type):
     for unit_req in get_creature_requests():
         if unit_req.unit_type == type:
             pool.append(unit_req)
-    print('pool', pool)
     unit_request = choice(pool)
     return unit_request.get()
 
