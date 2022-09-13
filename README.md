@@ -106,7 +106,7 @@ Music and sound effects were obtained from various free gaming content websites,
 
 All enemy units in Dreams of a Jaguar are created from a single image "sprite" containing 4 frames of the same creature arranged in a 2x2 grid such that displaying them in sequence would produce an animation. Here is a hi-res example of a single enemy unit sprite containing 4 frames: 
 
-<img src="stable_diffusion/init_image/bird2.png" alt="four frame sprite example" width="500" height="500"/>
+<img src="stable_diffusion/init_image/air_parrot.png" alt="four frame sprite example" width="500" height="500"/>
 <br><br>
 
 When an ```EnemyUnit``` class is intantiated, the \__init__ method loads the corresponding image sprite and splits it up into a list of 4 smaller images representing each frame.
