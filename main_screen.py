@@ -86,7 +86,7 @@ class MainScreen:
             if i % 2 == 0: air_units_x -= 40
             else: air_units_x += 40
 
-        ground_units_x = 675    
+        ground_units_x = 675
         for i, ground_unit in enumerate(self.ground_units):
             y = ((i + 1) * 80) + 100
             self.ground_units_group.add(
@@ -133,6 +133,7 @@ class MainScreen:
                     if not self.bg_task_lock[f'a{i}']:
                         self.bg_task_lock[f'a{i}'] = True
                         Thread(target=replace_air_unit, name=f'aworker{i}').start()
+                    break
                     
             for i, ground_unit in enumerate(self.ground_units_group):
                 if ground_unit.rect.collidepoint(mouse_pos) and not self.bg_task_lock[f'all'] and not self.bg_task_lock[f'g{i}']:
@@ -153,6 +154,8 @@ class MainScreen:
                     if not self.bg_task_lock[f'g{i}']:
                         self.bg_task_lock[f'g{i}'] = True
                         Thread(target=replace_ground_unit, name=f'gworker{i}').start()
+                    
+                    break
 
     def draw(self):
         
