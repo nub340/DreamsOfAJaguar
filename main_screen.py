@@ -9,7 +9,7 @@ from stable_diffusion.dream import regenerate_unit, ensure_api_key
 from enemy import Enemy
 
 class MainScreen:
-    def __init__(self, screen, dream_mode, font, large_font, tip_font, high_score, score, prev_score):
+    def __init__(self, screen, dream_mode, font, large_font, tip_font, high_score, score, prev_score, fade_in = None):
         self.screen = screen
         self.dream_mode = dream_mode
         self.font = font
@@ -18,6 +18,11 @@ class MainScreen:
         self.high_score = high_score
         self.score = score
         self.prev_score = prev_score
+        
+        if fade_in:
+            self.fade_alpha = 255
+        else:
+            self.fade_alpha = None
 
         self.intro_background = pygame.image.load('graphics/map2.png').convert_alpha()
         self.intro_background_offset = 0
@@ -152,8 +157,7 @@ class MainScreen:
         
         mouse_pos = pygame.mouse.get_pos()
         
-        # background
-        self.screen.fill((94, 129, 162))   
+        # background  
         if self.intro_background_fwd:
             if self.intro_background_offset < -1000:
                 self.intro_background_fwd = False
@@ -254,7 +258,7 @@ class MainScreen:
                 if touching:
 
                     if self.bg_task_lock[f'a{i}'] or self.bg_task_lock['all']:
-                        tip = self.tip_font.render(f'BUSY...', False, (0, 0, 0))
+                        tip = self.tip_font.render(f'DREAMING...', False, (0, 0, 0))
                     else:
                         tip = self.tip_font.render(f'REGENERATE AIR UNIT {i+1}', False, (0, 0, 0))
 
@@ -270,7 +274,7 @@ class MainScreen:
                 if touching:
 
                     if self.bg_task_lock[f'g{i}'] or self.bg_task_lock['all']:
-                        tip = self.tip_font.render(f'BUSY...', False, (0, 0, 0))
+                        tip = self.tip_font.render(f'DREAMING...', False, (0, 0, 0))
                     else:
                         tip = self.tip_font.render(f'REGENERATE GROUND UNIT {i+1}', False, (0, 0, 0))
 
@@ -286,14 +290,19 @@ class MainScreen:
                 if all(value == False for value in self.bg_task_lock.values()):
                     tip = self.tip_font.render(f'REGENERATE ALL UNITS', False, (0, 0, 0))
                 else:
-                    tip = self.tip_font.render(f'BUSY...', False, (0, 0, 0))
+                    tip = self.tip_font.render(f'DREAMING...', False, (0, 0, 0))
                     
                 tip_surf = pygame.Surface(tip.get_size())
                 tip_surf.fill((200, 200, 200))
                 tip_surf.blit(tip, (2, 2))
                 self.screen.blit(tip_surf, tip_surf.get_rect(midleft = (mouse_pos[0]+10, mouse_pos[1]))) 
-
         
+        if self.fade_alpha and self.fade_alpha > 0:
+            self.fade_alpha -= 5
+            fade_surf = pygame.Surface([800,400], pygame.SRCALPHA, 32).convert_alpha()
+            fade_surf.fill((0, 0, 0))
+            fade_surf.set_alpha(self.fade_alpha)
+            self.screen.blit(fade_surf, (0, 0))
 
     def trigger_easter_egg(self):
         if self.angle == 0:

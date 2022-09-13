@@ -224,7 +224,7 @@ class Game():
                 self.set_game_music('intro')
 
                 if not self.main_screen:
-                    self.main_screen = MainScreen(self.screen, self.dream_mode, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score)
+                    self.main_screen = MainScreen(self.screen, self.dream_mode, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score, True)
                 self.main_screen.draw()
                 
             pygame.display.update()
