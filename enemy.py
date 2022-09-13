@@ -29,11 +29,11 @@ class Enemy(pygame.sprite.Sprite):
         self.mask = self.masks[int(self.animation_index)]
 
         if type == 'air':
-            if not loc: loc = (randint(900, 1100), randint(200, 270))
-            self.rect = self.image.get_rect(midbottom = loc)
+            if not loc: self.loc = (randint(900, 1100), randint(200, 270))
+            self.rect = self.image.get_rect(midbottom = self.loc)
         else:
-            if not loc: loc = (randint(900, 1100), GROUND_Y+35)
-            self.rect = self.image.get_rect(midbottom = loc)
+            if not loc: self.loc = (randint(900, 1100), GROUND_Y+35)
+            self.rect = self.image.get_rect(midbottom = self.loc)
 
     def animate(self, mouse_pos):
         self.animation_index += 0.1
@@ -46,8 +46,6 @@ class Enemy(pygame.sprite.Sprite):
             self.image = make_dreamy(self.image, 'purple', 0, 4)
             self.mask = pygame.mask.from_surface(self.image)
             self.rect = self.image.get_rect(midbottom = (self.loc[0], self.loc[1]+8))
-        else:
-            self.rect = self.image.get_rect(midbottom = self.loc)
 
     def update(self, mouse_pos = None):
         self.rect.x += self.velocity
