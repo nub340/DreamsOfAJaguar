@@ -117,57 +117,60 @@ To animate the frames, the variable ```animation_index``` is used to track which
 A pygame ```mask``` is used for colision detection. Using a mask allows you to detect if any of the player's non-transparent pixels are touching any of the enemy's non-transparent pixels. Each frame uses a separate mask, as the transparent part is different in each frame.
 
 ## "Dreaming" up new units with Stable Diffusion
-To dynamically generate random creates/units that look at least _somewhat_ feasible when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a visual example of exactly what we're looking for. These images are found in the ```/stable-diffusion/init_image``` folder.
+To dynamically generate random creates/units that look at least _somewhat_ feasible when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a visual example of what we're looking for. These images are found in the ```/stable-diffusion/init_image``` folder.
 
-This 2x2 grid format has netted us the best results so far with Stable Diffusion. Attempting to create multiple frames for the same creature as separate requests to SD would rarely produce images able to be animated in sequence. However, combining all of the frames into a single image actually works pretty well. That is, in conjuction with the highly curated text prompt and other settings. When all of these parameters are adjusted just right, it can produce some really amazing results!
+The 2x2 grid format has so far produced the best results. Attempting to create multiple frames for the same creature as separate requests would rarely produce images able to be animated in sequence. Perhaps there is a better way we have yet to discover. However, combining all of the frames into a single image actually works surprisingly well. That is, in conjuction with the highly curated text prompt and other settings. When all of these parameters are adjusted just right, it can produce some really cool results!
+
+## Stable Diuffusion Integration ##
+Initially we wanted to install and run Stable Diffusion locally along side our game so that everything was being ran locally. However, this approach presented several challenges:
+
+- Intel Mac vs M1 Mac vs PC installation & command line differences
+- GPU vs CPU availability
+- very large model/checkpoint files (5+ GB)
+- Model speed differences on different hardware
+- Multiple forks and rapidly evolving codebase
+
+While still an intruging idea that we will undoubtably continue to pursue, we decided it was out of scope for this project. Instead, we opted to use a readily available web API (replicate.com), which greatly simplified integration and would ensure compatibility no matter what type of computer was running it. As long as it has internet access and can run Python, you should be good to go. All you need is an API KEY from replicate.com.
 
 #### Player Involvement ####
- With all that said, this approach is still very unpredictable and can often generate undesirable results. To address this issue, we decided to let the player interact with Stable Diffusion directly by simply clicking on a unit they don't like on the main screen. This will replace the clicked unit with a newly generated unit. The player can repeat this process until they like all of their units, and/or are free to explore and keep generating more just for fun! 
-
+ With all that said, our approach is still unpredictable and can often generate undesirable results. To address this, we decided to let the player interact with Stable Diffusion on the main screen directly by allowing them to click on either a specific unit, or the player chatacter in the center to regenerate either a specific unit, or all the units, respectfully. The player can repeat this process until they like all of their units, and/or are free to explore and keep generating more just for fun! Regenerating units can take around 30 seconds to a minute, depending on internet speed and server.
 
 ## Game Concept and Development Process ##
-For days we brainstormed before finally settling on a game. At first all we knew for sure was that we wanted it to be ancient Mayan themed and utilize machine learning / A.I. in some novel and fun way.
+We brainstormed quite a few different ideas before finally settling on a game. At first, all we knew was that we wanted it to be ancient Mayan themed and utilize machine learning / A.I. in some novel and fun way.
 
 YouTube has a ton of great pygame tutorials and after watching a bunch we decided to create a super simple side-scrolling "flappy-bird" style game.
 
 Around the same time we were also heavily experimenting with Dall-E 2, Mid Journey, and Stable Diffusion for producing A.I. generated art from simple text prompts. We decided to use these models to help us create some of our game assets. Specifically:
 
 - The main player character was generated by Dall-E 2 and then hand-edited in Gimp to create all of the needed frames for the animtations.
-- The panning background on the main screen was generated by Mid Journey.
+- The background on the main screen that pans back & forth was generated by Mid Journey.
 
-However, after managing to get stable-diffusion running locally, we realized we could totally embed stable-diffusion in our game (they're both python) and have our game use it to generate content dynamically on-the-fly!!!
+We managed to get stable-diffusion running on our local machines so we could create more game art and realized it would be super cool to embed stable-diffusion directly in our game and use it to generate content dynamically! After all, they are both Python! However, due to reasons outlined above, we opted for a web API for simplicity.
 
-While still a very intruging idea, and one we will undoubtably continue to pursue, this quickly proved to be cumbersome and out of scope for this project. Not to mention, the model files are like 5-7GB depending on version. 
-
-Then we discovered [replicate.com](https://replicate.com), which offers a web API for running Stable-Diffusion models in the cloud, as-a-service. This approach seemed to offer us a near-term and simplified solution to allow us to proceed with the concept.
-
-To enable this feature, sign up for a replicate.com account and get an API KEY. Beware it is not free, but the cost is minimal if you don't go too crazy. Add this API KEY to your ENV and then run:
+To enable "Dream Mode", simply sign-up for a replicate.com account and get an API KEY. Be aware it is not free to use, but the cost is minimal if you don't go too crazy. Once you have an API KEY, run the following:
 
 ```
 export REPLICATE_API_TOKEN=<api_key>
 python project.py --dream
 ```
-The game will automatically "dream" up 6 new unique enemy units, 3 flying units, 3 ground units. This process can take a minute depending on internet speed. Once complete, the enemy units will be displayed on the main screen. The player can then click on a unit to replace that one with a newly generated unit.
+
+or
+
+```
+python project.py --dream <api_key>
+```
+
+If this is the first time running in Dream Mode, the game will automatically "dream" up 6 new unique enemy units, 3 flying units, 3 ground units. This process can take a minute depending on internet speed. Once complete, the enemy units will be displayed on the main screen. The player can then click on a unit to replace that one with a newly generated unit.
 
 Once you like all of the units that are currently displayed, simply press ```SPACE``` to start a game with the units you just created!
-
-If you want to keep the units you currently have be sure to run the game _**without**_ the ```--dream``` switch:
-```
-python project.py
-```
-
-This will start the game using the previously genereted units.
-
-
 
 ## Background Animations ##
 The Main screen background was generated via Midjourney.
 
-We discussed several ideas for the game background while playing, including additional A.I. generated art, but after finding the background assets linked to above, we decided we decided to go with a parallax scrolling background because the assets looked great, fit our needs, and because we've always wanted to learn how to do parallax scrolling. This was very satisfying to implement and to see working!
+We discussed several ideas for the game background when actually playing, and decided to go with a parallax scrolling background because we found some great assets that fit our needs, and because parallax scrolling soun ded like a lot of fun to learn. This was very satisfying to implement and to see working!
 
 ## Gameplay ##
-The game started out as a simple "flappy-bird"-style game where you just jump over enemies. However, we added additional gameplay functionality to make the game more fun. This included the ability to move forwards & backwards, crouching, and attacking. We also added attack effects, sounds, high score, game persitence, and various other little tweaks :)
-
+The game started out as a simple "flappy-bird"-style game where you just jump over enemies. However, we added additional gameplay functionality to make the game a bit more fun. This includes the ability to move forwards & backwards, crouching, and attacking. We also added attack effects, sounds, high score, game persitence, and various other little tweaks :)
 
 ## Asset Attibution...
 <a name="ca"></a>
