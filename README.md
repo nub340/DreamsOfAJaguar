@@ -117,7 +117,7 @@ To animate the frames, the variable ```animation_index``` is used to track which
 A pygame ```mask``` is used for colision detection. Using a mask allows you to detect if any of the player's non-transparent pixels are touching any of the enemy's non-transparent pixels. Each frame uses a separate mask, as the transparent part is different in each frame.
 
 ## "Dreaming" up new units with Stable Diffusion
-To dynamically generate random creates/units that look at least _somewhat_ feasible when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a visual example of what we're looking for. These images are found in the ```/stable-diffusion/init_image``` folder.
+To dynamically generate random creatures that look at least _somewhat_ feasible when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a visual example of what we're looking for. These images are found in the ```/stable-diffusion/init_image``` folder.
 
 The 2x2 grid format has so far produced the best results. Attempting to create multiple frames for the same creature as separate requests would rarely produce images able to be animated in sequence. Perhaps there is a better way we have yet to discover. However, combining all of the frames into a single image actually works surprisingly well. That is, in conjuction with the highly curated text prompt and other settings. When all of these parameters are adjusted just right, it can produce some really cool results!
 
@@ -133,7 +133,10 @@ Initially we wanted to install and run Stable Diffusion locally along side our g
 While still an intruging idea that we will undoubtably continue to pursue, we decided it was out of scope for this project. Instead, we opted to use a readily available web API (replicate.com), which greatly simplified integration and would ensure compatibility no matter what type of computer was running it. As long as it has internet access and can run Python, you should be good to go. All you need is an API KEY from replicate.com.
 
 #### Player Involvement ####
- With all that said, our approach is still unpredictable and can often generate undesirable results. To address this, we decided to let the player interact with Stable Diffusion on the main screen directly by allowing them to click on either a specific unit, or the player chatacter in the center to regenerate either a specific unit, or all the units, respectfully. The player can repeat this process until they like all of their units, and/or are free to explore and keep generating more just for fun! Regenerating units can take around 30 seconds to a minute, depending on internet speed and server.
+With all that said, our approach is still unpredictable and can often generate undesirable results. To address this, we decided to let the player interact with Stable Diffusion on the main screen directly by allowing them to click on either a specific unit, or the player chatacter in the center to regenerate either a specific unit, or all the units, respectfully. The player can repeat this process until they like all of their units, and/or are free to explore and keep generating more just for fun! Regenerating units can take around 30 seconds to a minute, depending on internet speed and server.
+
+#### Threading ####
+In order to make web requests without locking up the game UI, we're utilizing seperate threads for each web request / generate unit request. Be aware there are some bugs associated with this. I.e., if you kill the game while a thread is still running, the threads will continue running until complete. You also cannot cancel an already running thread.
 
 ## Game Concept and Development Process ##
 We brainstormed quite a few different ideas before finally settling on a game. At first, all we knew was that we wanted it to be ancient Mayan themed and utilize machine learning / A.I. in some novel and fun way.
