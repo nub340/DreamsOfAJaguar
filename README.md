@@ -1,12 +1,12 @@
 # Dreams of a Jaguar 
-Ancient Mayan themed side-scrolling video game with a twist: All of the enemy units are dynamically generated via Stable Diffusion!
+Ancient Mayan themed side-scrolling video game with a twist: All the enemy units are dynamically generated via Stable Diffusion!
 
 **Final project for Harvard edX CS50P ending Dec. 30, 2022.**
 
 #### Video Demo: <URL_HERE>
 
 ## Description:
-Try to survive as long as possible by jumping over, crouching under, and/or attacking enemy units. 
+Try to survive for as long as possible by jumping over, crouching under, and/or attacking enemy units. 
 
 ### Controls ###
 - Jump - ```UP```
@@ -56,12 +56,12 @@ python project.py
 
 ## Project structure:
 
-The project is oprganized as follows:
+The project is organized as follows:
 - ```project.py``` - the main python file you need to execute to run the game.
-- ```game.py``` - ```Game``` class responsible for composing all of the various classes, functions, and capabilities into a cohesive game. 
-- ```player.py``` - ```Player``` class responsible for encapsulating all of the player-related attributes and logic.
-- ```enemy.py``` - ```Enemy``` class responsible for encapsulating all of the enemy-related attributes and logic.
-- ```main_screen.py``` -  ```MainScreen``` class responsible for encapsulating all of the main screen related attributes and logic.
+- ```game.py``` - ```Game``` class responsible for composing all the various classes, functions, and capabilities into a cohesive game. 
+- ```player.py``` - ```Player``` class responsible for encapsulating all the player-related attributes and logic.
+- ```enemy.py``` - ```Enemy``` class responsible for encapsulating all the enemy-related attributes and logic.
+- ```main_screen.py``` -  ```MainScreen``` class responsible for encapsulating all the main screen related attributes and logic.
 - ```config.py``` - configuration constants such as gravity, screen size, player velocity, etc.
 - ```test_project.py``` - tests for verifying everything in ```project.py``` are working as expected.
 - ```README.md``` - **You are here**
@@ -76,7 +76,7 @@ We utlilized [midjourney](https://www.midjourney.com/home/) & [Dall-E 2](https:/
 ### Player Character ###
 The main player character was generated via [Dall-E 2](https://openai.com/dall-e-2/) with th prompt: ```Ancient Mayan Jaguar Chaac God 16-bit style```.
 
-Using Gimp, we then manually created all of the character image variations including: stand, walk, attack, jump, jump-attack, crouch, and just for fun, crouch-attack :)
+Using Gimp, we then manually created all of the character image variations including stand, walk, attack, jump, jump-attack, crouch, and just for fun, crouch-attack :)
 
 <div>
     <img alt="player standing" src="graphics/Player/player_stand.png"/>
@@ -109,19 +109,19 @@ All enemy units in Dreams of a Jaguar are created from a single image "sprite" c
 <img src="stable_diffusion/init_image/air_parrot.png" alt="four frame sprite example" width="500" height="500"/>
 <br><br>
 
-When an ```EnemyUnit``` class is intantiated, the \__init__ method loads the corresponding image sprite and splits it up into a list of 4 smaller images representing each frame.
+When an ```EnemyUnit``` class is instantiated, the \__init__ method loads the corresponding image sprite and splits it up into a list of 4 smaller images representing each frame.
 
 To animate the frames, the variable ```animation_index``` is used to track which frame to draw. This variable is incremented by ```0.1``` on every iteration of the game loop, and is then passed to ```int()``` to determine which frame to show. This means, we'll get frame ```0``` for ten iterations, then frame ```1``` for ten iterations, and so on until we get to frame ```9``` and start back over at ```0``` again. Adjusting this constant changes the speed of the animation.
 
 #### Collisions ####
-A pygame ```mask``` is used for colision detection. Using a mask allows you to detect if any of the player's non-transparent pixels are touching any of the enemy's non-transparent pixels. Each frame uses a separate mask, as the transparent part is different in each frame.
+A pygame ```mask``` is used for collision detection. Using a mask allows you to detect if any of the player's non-transparent pixels are touching any of the enemy's non-transparent pixels. Each frame uses a separate mask, as the transparent part is different in each frame.
 
 ## "Dreaming" up new units with Stable Diffusion
 To dynamically generate random creatures that look at least _somewhat_ feasible when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a visual example of what we're looking for. These images are found in the ```/stable-diffusion/init_image``` folder.
 
-The 2x2 grid format has so far produced the best results. Attempting to create multiple frames for the same creature as separate requests would rarely produce images able to be animated in sequence. Perhaps there is a better way we have yet to discover. However, combining all of the frames into a single image actually works surprisingly well. That is, in conjuction with the highly curated text prompt and other settings. When all of these parameters are adjusted just right, it can produce some really cool results!
+The 2x2 grid format has so far produced the best results. Attempting to create multiple frames for the same creature as separate requests would rarely produce images able to be animated in sequence. Perhaps there is a better way we have yet to discover. However, combining all of the frames into a single image actually works surprisingly well. That is, in conjunction with the highly curated text prompt and other settings. When all of these parameters are adjusted just right, it can produce some really cool results!
 
-## Stable Diuffusion Integration ##
+## Stable Diffusion Integration ##
 Initially we wanted to install and run Stable Diffusion locally along side our game so that everything was being ran locally. However, this approach presented several challenges:
 
 - Intel Mac vs M1 Mac vs PC installation & command line differences
@@ -130,13 +130,13 @@ Initially we wanted to install and run Stable Diffusion locally along side our g
 - Model speed differences on different hardware
 - Multiple forks and rapidly evolving codebase
 
-While still an intruging idea that we will undoubtably continue to pursue, we decided it was out of scope for this project. Instead, we opted to use a readily available web API (replicate.com), which greatly simplified integration and would ensure compatibility no matter what type of computer was running it. As long as it has internet access and can run Python, you should be good to go. All you need is an API KEY from replicate.com.
+While still an intriguing idea that we will undoubtably continue to pursue, we decided it was out of scope for this project. Instead, we opted to use a readily available web API (replicate.com), which greatly simplified integration and would ensure compatibility no matter what type of computer was running it. As long as it has internet access and can run Python, you should be good to go. All you need is an API KEY from replicate.com.
 
 #### Player Involvement ####
-With all that said, our approach is still unpredictable and can often generate undesirable results. To address this, we decided to let the player interact with Stable Diffusion on the main screen directly by allowing them to click on either a specific unit, or the player chatacter in the center to regenerate either a specific unit, or all the units, respectfully. The player can repeat this process until they like all of their units, and/or are free to explore and keep generating more just for fun! Regenerating units can take around 30 seconds to a minute, depending on internet speed and server.
+With all that said, our approach is still unpredictable and can often generate undesirable results. To address this, we decided to let the player interact with Stable Diffusion on the main screen directly by allowing them to click on either a specific unit, or the player character in the center to regenerate either a specific unit, or all the units, respectfully. The player can repeat this process until they like all their units, and/or are free to explore and keep generating more just for fun! Regenerating units can take around 30 seconds to a minute, depending on internet speed and server.
 
 #### Threading ####
-In order to make web requests without locking up the game UI, we're utilizing seperate threads for each web request to generate a new unit. Be aware there are some bugs associated with this. I.e., if you kill the game while a thread is still running, the threads will continue running until complete. You also cannot cancel an already running thread.
+In order to make web requests without locking up the game UI, we're utilizing separate threads for each web request to generate a new unit. Be aware there are some bugs associated with this. I.e., if you kill the game while a thread is still running, the threads will continue running until complete. You also cannot cancel an already running thread.
 
 ## Game Concept and Development Process ##
 We brainstormed quite a few different ideas before finally settling on a game. At first, all we knew was that we wanted it to be ancient Mayan themed and utilize machine learning / A.I. in some novel and fun way.
@@ -145,7 +145,7 @@ YouTube has a ton of great pygame tutorials and after watching a bunch we decide
 
 Around the same time we were also heavily experimenting with Dall-E 2, Mid Journey, and Stable Diffusion for producing A.I. generated art from simple text prompts. We decided to use these models to help us create some of our game assets. Specifically:
 
-- The main player character was generated by Dall-E 2 and then hand-edited in Gimp to create all of the needed frames for the animtations.
+- The main player character was generated by Dall-E 2 and then hand-edited in Gimp to create all of the needed frames for the animations.
 - The background on the main screen that pans back & forth was generated by Mid Journey.
 
 We managed to get stable-diffusion running on our local machines so we could create more game art and realized it would be super cool to embed stable-diffusion directly in our game and use it to generate content dynamically! After all, they are both Python! However, due to reasons outlined above, we opted for a web API for simplicity.
@@ -165,17 +165,17 @@ python project.py --dream <api_key>
 
 If this is the first time running in Dream Mode, the game will automatically "dream" up 6 new unique enemy units, 3 flying units, 3 ground units. This process can take a minute depending on internet speed. Once complete, the enemy units will be displayed on the main screen. The player can then click on a unit to replace that one with a newly generated unit.
 
-Once you like all of the units that are currently displayed, simply press ```SPACE``` to start a game with the units you just created!
+Once you like all the units that are currently displayed, simply press ```SPACE``` to start a game with the units you just created!
 
 ## Background Animations ##
 The Main screen background was generated via Midjourney.
 
-We discussed several ideas for the game background when actually playing, and decided to go with a parallax scrolling background because we found some great assets that fit our needs, and because parallax scrolling soun ded like a lot of fun to learn. This was very satisfying to implement and to see working!
+We discussed several ideas for the game background when actually playing and decided to go with a parallax scrolling background because we found some great assets that fit our needs, and because parallax scrolling sounded like a lot of fun to learn. This was very satisfying to implement and to see working!
 
 ## Gameplay ##
-The game started out as a simple "flappy-bird"-style game where you just jump over enemies. However, we added additional gameplay functionality to make the game a bit more fun. This includes the ability to move forwards & backwards, crouching, and attacking. We also added attack effects, sounds, high score, game persitence, and various other little tweaks :)
+The game started out as a simple "flappy-bird"-style game where you just jump over enemies. However, we added additional gameplay functionality to make the game a bit more fun. This includes the ability to move forwards & backwards, crouching, and attacking. We also added attack effects, sounds, high score, game persistence, and various other little tweaks :)
 
-## Asset Attibution...
+## Asset Attribution...
 <a name="ca"></a>
 - [Background Track](audio/legend-of-narmer.mp3):  
 The Legend of Narmer by WombatNoisesAudio | https://soundcloud.com/user-734462061
