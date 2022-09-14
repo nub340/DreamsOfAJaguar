@@ -136,7 +136,7 @@ While still an intruging idea that we will undoubtably continue to pursue, we de
 With all that said, our approach is still unpredictable and can often generate undesirable results. To address this, we decided to let the player interact with Stable Diffusion on the main screen directly by allowing them to click on either a specific unit, or the player chatacter in the center to regenerate either a specific unit, or all the units, respectfully. The player can repeat this process until they like all of their units, and/or are free to explore and keep generating more just for fun! Regenerating units can take around 30 seconds to a minute, depending on internet speed and server.
 
 #### Threading ####
-In order to make web requests without locking up the game UI, we're utilizing seperate threads for each web request / generate unit request. Be aware there are some bugs associated with this. I.e., if you kill the game while a thread is still running, the threads will continue running until complete. You also cannot cancel an already running thread.
+In order to make web requests without locking up the game UI, we're utilizing seperate threads for each web request to generate a new unit. Be aware there are some bugs associated with this. I.e., if you kill the game while a thread is still running, the threads will continue running until complete. You also cannot cancel an already running thread.
 
 ## Game Concept and Development Process ##
 We brainstormed quite a few different ideas before finally settling on a game. At first, all we knew was that we wanted it to be ancient Mayan themed and utilize machine learning / A.I. in some novel and fun way.
@@ -182,3 +182,8 @@ The Legend of Narmer by WombatNoisesAudio | https://soundcloud.com/user-73446206
 Creative Commons Attribution 3.0 Unported License
 https://creativecommons.org/licenses/by/3.0/
 Music promoted by https://www.chosic.com/free-music/all/
+<br>
+
+# Special Thanks#
+- David Malen - You're a great teacher, thanks for all your effort!
+- Jeff "Foo" - our friend who made us a bunch of great food while we worked on this project!
