@@ -134,8 +134,8 @@ class Game():
         self.screen.blit(self.bg_hills_surface, (self.bg_hills_offset+1000, 125))
 
         self.screen.blit(self.bg_temple_surface, (self.bg_temple_offset, 100))
-        self.screen.blit(self.bg_temple_surface, (self.bg_temple_offset+500, 100))
         self.screen.blit(self.bg_temple_surface, (self.bg_temple_offset+1000, 100))
+        self.screen.blit(self.bg_temple_surface, (self.bg_temple_offset+2000, 100))
 
         self.screen.blit(self.bg_trees_surface, (self.bg_trees_offset, 0))
         self.screen.blit(self.bg_trees_surface, (self.bg_trees_offset+500, 0))
