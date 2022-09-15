@@ -65,9 +65,12 @@ The project is oprganized as follows:
 - ```test_project.py``` - tests for verifying everything in ```project.py``` are working as expected.
 - ```README.md``` - **You are here**
 - ```requirements.txt``` - list of pip libraries required
-- ```audio/``` - directory containing all of the sound and music assets
-- ```graphics/``` - directory containing all of the graphical assets in a format suitable for the game to use
-- ```stable-diffusion/``` - directory containing all of the stable diffusion related files and assets. Explained further in detail below.
+- ```import_unit.py``` - script to import newly generated unit images to game
+- ```effects.py``` - Custom neon glow effect
+- ```test_project.py``` - Unit tests
+- ```audio/``` - directory containing all of the sound and music assets for the game
+- ```graphics/``` - directory containing all of the graphical assets for the game
+- ```stable-diffusion/``` - directory containing all of the stable diffusion related files and assets. *Explained in further detail below*
 
 ## Baked-In Game Assets ##
 We utlilized [midjourney](https://www.midjourney.com/home/) & [Dall-E 2](https://openai.com/dall-e-2/) to help generate the visual assets used in the game. For instance, the main player character was generated directly via Dall-E 2 with prompt: ```Ancient Mayan Jaguar Chaac God 16-bit style```. 
@@ -142,3 +145,8 @@ The Legend of Narmer by WombatNoisesAudio | https://soundcloud.com/user-73446206
 Creative Commons Attribution 3.0 Unported License
 https://creativecommons.org/licenses/by/3.0/
 Music promoted by https://www.chosic.com/free-music/all/
+<br>
+
+# Special Thanks #
+- David Malen - You're a great teacher, thanks for all your effort!
+- Jeff "Foo" - our friend who made us a bunch of great food while we worked on this project!
