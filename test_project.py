@@ -33,9 +33,10 @@ def test_player_init():
     assert player
 
 def test_enemy_init():
-    enemy = Enemy('bug')
+    enemy = Enemy('bug','graphics/units_static/air/1.png')
     assert enemy 
-    enemy = Enemy('monkey')
+
+    enemy = Enemy('monkey','graphics/units_static/ground/1.png')
     assert enemy 
 
 def test_save_file():

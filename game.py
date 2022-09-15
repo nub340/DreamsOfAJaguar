@@ -11,7 +11,7 @@ from main_screen import MainScreen
 from effects import make_dreamy
 
 class Game():
-    def __init__(self, dream_mode):
+    def __init__(self, dream_mode = False):
         pygame.init()
         self.dream_mode = dream_mode
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -83,13 +83,11 @@ class Game():
       
         pygame.mixer.music.set_volume(self.sound_volume)
         if track == 'intro' and self.game_music != 'intro':
-            print('sound intro')
             self.game_music = track
             pygame.mixer.music.load('audio/legend-of-narmer.mp3')
             pygame.mixer.music.set_volume(self.sound_volume)
             pygame.mixer.music.play(-1)
         elif track == 'in_game' and self.game_music != 'in_game':
-            print('sound in_game')
             self.game_music = track
             pygame.mixer.music.load('audio/music.wav')
             pygame.mixer.music.set_volume(self.sound_volume)
