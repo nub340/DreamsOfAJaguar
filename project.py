@@ -2,8 +2,6 @@ from game import Game
 from sys import argv
 import os
 
-from import_unit import regenerate_all_units, import_all_units
-
 def main(dream_mode):
     
     game = Game(dream_mode)
