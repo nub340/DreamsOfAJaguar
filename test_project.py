@@ -1,6 +1,6 @@
 from project import Game
 from player import Player
-from enemy_deprecated import EnemyDeprecated
+from enemy import Enemy
 import config 
 import os
 import pygame
@@ -19,7 +19,7 @@ def test_game_init():
     assert game.score == 0
     assert game.start_time == 0
     assert game.game_active == False
-    assert pygame.display.get_caption()[0] == 'Jaguar Run'
+    assert pygame.display.get_caption()[0] == 'Dreams of a Jaguar'
     
     player =  game.player.sprites()[0]
     assert player.gravity == 0
@@ -33,9 +33,9 @@ def test_player_init():
     assert player
 
 def test_enemy_init():
-    enemy = EnemyDeprecated('bug')
+    enemy = Enemy('bug')
     assert enemy 
-    enemy = EnemyDeprecated('monkey')
+    enemy = Enemy('monkey')
     assert enemy 
 
 def test_save_file():
