@@ -106,35 +106,6 @@ All enemy units in Dreams of a Jaguar are created from a single image "sprite" c
 
 When an ```EnemyUnit``` class is instantiated, the \__init__ method loads the corresponding image sprite and splits it up into a list of 4 smaller images representing each frame.
 
-The parallax scrolling background assets were obtained from:<br> https://gameartpartners.com/downloads/mayan-temple-game-background/
-
-### Audio ###
-Music and sound effects were obtained from various free gaming content websites, such as: [freesound.org](freesound.org), [pixabay.com](pixabay.com), and [chosic.com](chosic.com).
-
-- [Asset attributions below](#ca)
-
-## Enemy Units
-
-All enemy units in Dreams of a Jaguar are created from a single image "sprite" containing 4 frames of the same creature arranged in a 2x2 grid such that displaying them in sequence would produce an animation. Here is a hi-res example of a single enemy unit sprite containing 4 frames: 
-
-<img src="stable_diffusion/init_image/bird2.png" alt="four frame sprite example" width="500" height="500"/>
-<br><br>
-
-When an ```EnemyUnit``` class is intantiated, the \__init__ method loads the corresponding image sprite and splits it up into a list of 4 smaller images representing each frame.
-
-To animate the frames, the variable ```animation_index``` is used to track which frame to draw. This variable is incremented by ```0.1``` on every iteration of the game loop, and is then passed to ```int()``` to determine which frame to show. This means, we'll get frame ```0``` for ten iterations, then frame ```1``` for ten iterations, and so on until we get to frame ```9``` and start back over at ```0``` again. Adjusting this constant changes the speed of the animation.
-
-#### Collisions ####
-A pygame ```mask``` is used for colision detection. Using a mask allows you to detect if any of the player's non-transparent pixels are touching any of the enemy's non-transparent pixels. Each frame uses a separate mask, as the transparent part is different in each frame.
-
-## "Dreaming" up new units with Stable Diffusion
-To dynamically generate random creates/units that look at least _somewhat_ feasible when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a visual example of exactly what we're looking for. These images are found in the ```/stable-diffusion/init_image``` folder.
-
-This 2x2 grid format has netted us the best results so far with Stable Diffusion. Attempting to create multiple frames for the same creature as separate requests to SD would rarely produce images able to be animated in sequence. However, combining all of the frames into a single image actually works pretty well. That is, in conjuction with the highly curated text prompt and other settings. When all of these parameters are adjusted just right, it can produce some really amazing results!
-
-#### Player Involvement ####
- With all that said, this approach is still very unpredictable and can often generate undesirable results. To address this issue, we decided to let the player interact with Stable Diffusion directly by simply clicking on a unit they don't like on the main screen. This will replace the clicked unit with a newly generated unit. The player can repeat this process until they like all of their units, and/or are free to explore and keep generating more just for fun! 
-
 To animate the frames, the variable ```animation_index``` is used to track which frame to draw. This variable is incremented by ```0.1``` on every iteration of the game loop, and is then passed to ```int()``` to determine which frame to show. This means, we'll get frame ```0``` for ten iterations, then frame ```1``` for ten iterations, and so on until we get to frame ```9``` and start back over at ```0``` again. Adjusting this constant changes the speed of the animation.
 
 #### Collisions ####
