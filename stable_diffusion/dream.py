@@ -4,15 +4,23 @@ import requests
 import sys
 from PIL import Image
 import os
+import csv
+from random import choice
+from stable_diffusion.unit_request import UnitRequest
 
-# We are trying to mix image input and prompt input to create unique units. 
-# Currently Using a mask layer you get unwanted rigidity... with some more knowledge I beleve a mask layer or layers can be leveraged for unit "traits" or "level"
-# One image action at a time will 
+# We are mixing image input and prompt input to create unique units. 
+# Mask feature is disabled because you get unwanted rigidity. 
+# With some more knowledge I beleve the mask layer can be leveraged for unit traits & levels.
+
 # CONFIG ====================
-STABLE_DIFFUSION_PROMPT_GROUND = " 16bit Large Cat , spots , stripes , booleans , ints , fangs , cat with spots Running Animation Drawing , detailed drawing , 16 bit video game , cat walking cycle animation sheet , animation drawing sheet , walking cat animation sheet , detailed linework , replicate shape"
-STABLE_DIFFUSION_PROMPT_AIR = " bird , red markings , red heads , flapping animation cycle sheet , precisely drawn , 16bit style , detailed drawing , eagle vulture owl , flying animation cycle , mid flight , super sharp talons, claws, side view, mayan art style, Monarobot style, high-definition, sharp lines, catching prey , animation drawing , flying eagle animation sheet , detailed linework , replicate shape"
+STABLE_DIFFUSION_PROMPT_GROUND = " 16bit Colorful Neon stripes Large Cat , striped tiger orange , stripes , booleans , ints , fangs , cat with spots Running Animation Drawing , detailed drawing , 16 bit video game , cat walking cycle animation sheet , animation drawing sheet , walking cat animation sheet , detailed linework , replicate shape"
+STABLE_DIFFUSION_PROMPT_AIR = " pterodactyl , neon color bird , raptor , dinosaur , must have red markings , must have red heads , flapping animation cycle sheet , precisely drawn , 16bit style , detailed drawing , eagle vulture owl , flying animation cycle , mid flight , super sharp talons, claws, side view, mayan art style, Monarobot style, high-definition, sharp lines, catching prey , animation drawing , flying eagle animation sheet , detailed linework , replicate shape"
 
 # ===========================
+# Image is a four cell animation sheet  
+# Each cell has a frame of animaiton 
+# Image must have white background for the alpha layers to work properly
+# Animation sheets are all going right so we had to flip the output for the game.
 STABLE_DIFFUSION_WIDTH=768
 STABLE_DIFFUSION_HEIGHT=768
 
@@ -40,6 +48,19 @@ STABLE_DIFFUSION_GSCALE=16
 # ===========================
 
 model = replicate.models.get("stability-ai/stable-diffusion")
+unit_requests = []
+
+def get_creature_requests():
+    try:
+        if not unit_requests or len(unit_requests) == 0:
+            with open('stable_diffusion/unit_requests.csv') as csvFile:
+                reader = csv.reader(csvFile)
+                for row in reader:
+                    unit_requests.append(UnitRequest(row[0], row[1], row[2], row[3]))
+                csvFile.close()
+    finally:
+        return unit_requests
+
 
 def ensure_api_key():
     if not os.environ.get('REPLICATE_API_TOKEN'):
@@ -65,42 +86,20 @@ def generate_unit_image(type):
 def preview_new_unit(type):
     url = dream_new_unit(type)
     print(url)
-    webbrowser.open(url)
+    return webbrowser.open(url)
 
 def dream_new_unit(type):
-    if type == 'air': 
-        prompt = STABLE_DIFFUSION_PROMPT_AIR 
-        init_image = 'stable_diffusion/init_image/bird2.png'
-        # mask = 'stable_diffusion/init_image/bird2mask.png'
-    else: 
-        prompt = STABLE_DIFFUSION_PROMPT_GROUND
-        init_image = 'stable_diffusion/init_image/jag.png'
-        # mask = 'stable_diffusion/init_image/jagmask.png'
-    
-    attempts = 0
-    while attempts < 3:
-        try:
-            output = model.predict(
-                prompt=prompt,
-                width=STABLE_DIFFUSION_WIDTH,
-                height=STABLE_DIFFUSION_HEIGHT,
-                prompt_strength=STABLE_DIFFUSION_PSTRENGTH,
-                num_inference_steps=STABLE_DIFFUSION_ISTEPS,
-                guidance_scale=STABLE_DIFFUSION_GSCALE,
-                init_image=open(init_image, "rb"))
-                #mask=open(mask, "rb"))
+    pool = []
+    for unit_req in get_creature_requests():
+        if unit_req.unit_type == type:
+            pool.append(unit_req)
+    unit_request = choice(pool)
+    return unit_request.get()
 
-            attempts = 3
-
-        except Exception as e:
-            print('Error generating image. Retrying...')
-            attempts += 1
-            if attempts > 2:
-                raise e
-
-    # print(output)
-    return output[0]
-
+def dream_new_unit_by_name(name):
+    pool = list(filter(lambda r: r.name == name, get_creature_requests()))
+    unit_request = choice(pool)
+    return unit_request.get()
 
 def main():
     preview_new_unit(sys.argv[1])

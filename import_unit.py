@@ -5,8 +5,12 @@ from sys import argv, exit
 from threading import Thread
 from stable_diffusion.dream import regenerate_unit, clear_dream_dirs, ensure_api_key
 
-def get_units(type='air'):
-    dir = f'graphics/ai_units/{type}/'
+def get_dynamic_units(type='air'):
+    dir = f'graphics/units_dynamic/{type}/'
+    return sorted(list(map(lambda p: dir + p, os.listdir(dir))))
+
+def get_static_units(type='air'):
+    dir = f'graphics/units_static/{type}/'
     return sorted(list(map(lambda p: dir + p, os.listdir(dir))))
 
 def clear_folder(dir):
@@ -31,17 +35,15 @@ def extract_frame(img, frame):
     img_out.paste(img_frame, (
         int((tile_size[0]-img_frame.size[0])/2), 
         int((tile_size[1]-img_frame.size[1])/2)))
-    img_out.thumbnail((64, 64), Image.ANTIALIAS)
+    img_out.thumbnail((96, 96), Image.ANTIALIAS)
     return img_out
 
 def regenerate_all_units():
     ensure_api_key()
 
-    clear_folder('graphics/ai_units/air')
-    clear_folder('graphics/ai_units/ground')
+    # clear_folder('graphics/units_dynamic/air')
+    # clear_folder('graphics/units_dynamic/ground')
     clear_dream_dirs()
-
-    print('dreaming up new units...')
     tasks = []
     for i in range(1, 4):
 
@@ -56,8 +58,6 @@ def regenerate_all_units():
     for t in tasks:
         t.join()
 
-    print('dreaming complete!')
-
 def import_unit(type='air', unit_no = None):
     # build a list of images to process
     queue = []
@@ -68,11 +68,11 @@ def import_unit(type='air', unit_no = None):
         queue = list(map(lambda p: dir + p, os.listdir(dir)))
 
     # process each image in the list...
+    paths = []
     for image_file in queue:
         img = Image.open(image_file)
         img = img.convert("RGBA")
         
-
         # convert the background to alpha 
         datas = img.getdata()
         newData = []
@@ -90,19 +90,24 @@ def import_unit(type='air', unit_no = None):
         frame4 = extract_frame(img, 4)
 
         # combine the 4 frames back into a single image in a format suitable for the game to use
-        image_out = Image.new(mode="RGBA", size=(128, 128))
+        image_out = Image.new(mode="RGBA", size=(192, 192))
         image_out.paste(frame1, (0,0))
-        image_out.paste(frame2, (64,0))
-        image_out.paste(frame3, (0,64))
-        image_out.paste(frame4, (64,64))
-        
-        image_out.save(f'graphics/ai_units/{type}/{os.path.basename(image_file)}', "PNG")
+        image_out.paste(frame2, (96,0))
+        image_out.paste(frame3, (0,96))
+        image_out.paste(frame4, (96,96))
+
+        path = f'graphics/units_dynamic/{type}/{os.path.basename(image_file)}'
+        image_out.save(path, "PNG")
+        paths.append(path) 
+    return paths
 
 def import_all_units():
-    print('importing all ai units...')
-    import_unit('air')
-    import_unit('ground')
+    print('Importing A.I. generated units...')
+    air_paths = import_unit('air')
+    ground_paths = import_unit('ground')
     print('done.')
+    return air_paths + ground_paths
+    
 
 if __name__ == '__main__':
     if len(argv) == 3:

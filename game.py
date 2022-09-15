@@ -6,18 +6,19 @@ from config import *
 
 from player import Player
 from enemy import Enemy
-from ai_unit import AIUnit
-from ai_unit_import import get_units
+from import_unit import get_dynamic_units, get_static_units
 from main_screen import MainScreen
+from effects import make_dreamy
 
 class Game():
-    def __init__(self):
+    def __init__(self, dream_mode = False):
         pygame.init()
+        self.dream_mode = dream_mode
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen_rect = self.screen.get_rect(topleft = (0, 0))
         icon = pygame.image.load('graphics/Player/player_icon.png')
         pygame.display.set_icon(icon)
-        pygame.display.set_caption('Dream of the Jaguar')
+        pygame.display.set_caption('Dreams of a Jaguar')
         self.clock = pygame.time.Clock()
         self.game_font_large = pygame.font.Font('font/Pixeltype.ttf', 80)
         self.game_font = pygame.font.Font('font/Pixeltype.ttf', 50)
@@ -26,6 +27,7 @@ class Game():
         self.start_time = 0
         pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR))
         self.game_music = None 
+        self.sound_volume = 1
         self.paused = False
 
         self.score = 0
@@ -41,10 +43,16 @@ class Game():
         self.player.add(self.__player__)
 
         self.obstacle_group = pygame.sprite.Group()
-        self.units = {
-            'air': get_units('air'), 
-            'ground': get_units('ground')
-        }
+        if get_dynamic_units('air'):
+            self.units = {
+                'air': get_dynamic_units('air'), 
+                'ground': get_dynamic_units('ground')
+            }
+        else:
+            self.units = {
+                'air': get_static_units('air'), 
+                'ground': get_static_units('ground')
+            }
 
         # Background, ground
         self.bg_ground_surface = pygame.image.load('graphics/mayanbg1.png').convert_alpha()
@@ -65,19 +73,29 @@ class Game():
         self.enemy_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.enemy_timer, 1500)
 
+        # Sound Icon
+        self.sound_on_surf = pygame.transform.rotozoom(pygame.image.load('graphics/sound_on.png').convert_alpha(), 0, .3)
+        self.sound_on_rect = self.sound_on_surf.get_rect(center = (780, 15))
+        self.sound_off_surf = pygame.transform.rotozoom(pygame.image.load('graphics/sound_off.png').convert_alpha(), 0, .3)
+        self.sound_off_rect = self.sound_off_surf.get_rect(center = (780, 15))
+
     def set_game_music(self, track):
+      
+        pygame.mixer.music.set_volume(self.sound_volume)
         if track == 'intro' and self.game_music != 'intro':
             self.game_music = track
             pygame.mixer.music.load('audio/legend-of-narmer.mp3')
+            pygame.mixer.music.set_volume(self.sound_volume)
             pygame.mixer.music.play(-1)
         elif track == 'in_game' and self.game_music != 'in_game':
             self.game_music = track
             pygame.mixer.music.load('audio/music.wav')
-            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(self.sound_volume)
+            pygame.mixer.music.play(-1)     
 
     def display_score(self):
         current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
-        self.score_surf = self.game_font.render(f'Score: {current_time}', False, (113, 6, 115))
+        self.score_surf = make_dreamy(self.game_font.render(f'Score: {current_time}', False, (113, 6, 115)), 'pink', 2, 0)
         self.score_rect = self.score_surf.get_rect(center = (400, 50))
         self.screen.blit(self.score_surf, self.score_rect)
         return current_time
@@ -104,7 +122,7 @@ class Game():
 
     def draw_environment_layers(self):
         if self.bg_ground_offset <= -499: self.bg_ground_offset = 0
-        else: self.bg_ground_offset -= 1 * BG_ANIMATION_SPEED_MAGNITUDE
+        else: self.bg_ground_offset -= .7 * BG_ANIMATION_SPEED_MAGNITUDE
         
         if self.bg_trees_offset <= -499: self.bg_trees_offset = 0
         else: self.bg_trees_offset -= 0.25 * BG_ANIMATION_SPEED_MAGNITUDE
@@ -127,8 +145,8 @@ class Game():
         self.screen.blit(self.bg_hills_surface, (self.bg_hills_offset+1000, 125))
 
         self.screen.blit(self.bg_temple_surface, (self.bg_temple_offset, 100))
-        self.screen.blit(self.bg_temple_surface, (self.bg_temple_offset+500, 100))
         self.screen.blit(self.bg_temple_surface, (self.bg_temple_offset+1000, 100))
+        self.screen.blit(self.bg_temple_surface, (self.bg_temple_offset+2000, 100))
 
         self.screen.blit(self.bg_trees_surface, (self.bg_trees_offset, 0))
         self.screen.blit(self.bg_trees_surface, (self.bg_trees_offset+500, 0))
@@ -137,6 +155,12 @@ class Game():
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset, 0))
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+500, 0))
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+1000, 0))
+
+    def draw_sound_icon(self):
+        if self.sound_volume > 0:
+            self.screen.blit(self.sound_on_surf, self.sound_on_rect)
+        else:
+            self.screen.blit(self.sound_off_surf, self.sound_off_rect)
 
     def save_score(self, score, high_score, file_name = 'save.txt'):
         save_file = open(file_name, 'w')
@@ -163,18 +187,22 @@ class Game():
                         unit_types = []
                         if self.units['air']: unit_types.append('air')
                         if self.units['ground']: unit_types.append('ground')
-                        if unit_types:
-                            type = choice(unit_types)
-                            imported_units = self.units[type]
-                            self.obstacle_group.add(
-                                AIUnit(type, choice(imported_units), None, -6))
-                        else:
-                            self.obstacle_group.add(Enemy(choice(['bug', 'monkey', 'monkey', 'monkey'])))
+                        type = choice(unit_types)
+                        imported_units = self.units[type]
+                        self.obstacle_group.add(Enemy(type, choice(imported_units), None, -6))                    
 
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                         self.save_score(self.score, self.high_score)
                         pygame.quit()
                         exit()
+
+                    elif event.type == pygame.MOUSEBUTTONUP:
+                        if self.sound_volume > 0 and self.sound_on_rect.collidepoint(event.pos):
+                            self.sound_volume = 0
+                            self.player.sprites()[0].mute_on = True
+                        elif self.sound_volume == 0 and self.sound_off_rect.collidepoint(event.pos):
+                            self.sound_volume = 1
+                            self.player.sprites()[0].mute_on = False
 
                 else: 
                     if event.type == pygame.KEYDOWN:
@@ -195,6 +223,14 @@ class Game():
 
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         self.main_screen.mouse_clicked()
+
+                    elif event.type == pygame.MOUSEBUTTONUP:
+                        if self.sound_volume > 0 and self.sound_on_rect.collidepoint(event.pos):
+                            self.sound_volume = 0
+                            self.player.sprites()[0].mute_on = True
+                        elif self.sound_volume == 0 and self.sound_off_rect.collidepoint(event.pos):
+                            self.sound_volume = 1
+                            self.player.sprites()[0].mute_on = True
 
             if self.game_active:
                 self.set_game_music('intro')
@@ -221,8 +257,9 @@ class Game():
                 self.set_game_music('intro')
 
                 if not self.main_screen:
-                    self.main_screen = MainScreen(self.screen, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score)
+                    self.main_screen = MainScreen(self.screen, self.dream_mode, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score, True)
                 self.main_screen.draw()
                 
+            self.draw_sound_icon()
             pygame.display.update()
             self.clock.tick(60)
