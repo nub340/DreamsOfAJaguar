@@ -3,7 +3,7 @@ Ancient Mayan themed side-scrolling video game with a twist: All the enemy units
 
 **Final project for Harvard edX CS50P ending Dec. 30, 2022.**
 
-#### Video Demo: <URL_HERE>
+#### Video Demo: https://youtu.be/2cGdar39hJs
 
 ## Description: ## 
 Try to survive for as long as possible by jumping over, crouching under, and/or attacking enemy units. 
