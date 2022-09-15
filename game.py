@@ -229,8 +229,10 @@ class Game():
                     elif event.type == pygame.MOUSEBUTTONUP:
                         if self.sound_volume > 0 and self.sound_on_rect.collidepoint(event.pos):
                             self.sound_volume = 0
+                            self.player.sprites()[0].mute_on = True
                         elif self.sound_volume == 0 and self.sound_off_rect.collidepoint(event.pos):
                             self.sound_volume = 1
+                            self.player.sprites()[0].mute_on = True
 
             if self.game_active:
                 self.set_game_music('intro')
