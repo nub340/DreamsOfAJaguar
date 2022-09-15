@@ -86,7 +86,7 @@ def generate_unit_image(type):
 def preview_new_unit(type):
     url = dream_new_unit(type)
     print(url)
-    webbrowser.open(url)
+    return webbrowser.open(url)
 
 def dream_new_unit(type):
     pool = []

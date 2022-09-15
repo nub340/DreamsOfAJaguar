@@ -68,6 +68,7 @@ def import_unit(type='air', unit_no = None):
         queue = list(map(lambda p: dir + p, os.listdir(dir)))
 
     # process each image in the list...
+    paths = []
     for image_file in queue:
         img = Image.open(image_file)
         img = img.convert("RGBA")
@@ -94,14 +95,19 @@ def import_unit(type='air', unit_no = None):
         image_out.paste(frame2, (96,0))
         image_out.paste(frame3, (0,96))
         image_out.paste(frame4, (96,96))
-        
-        image_out.save(f'graphics/units_dynamic/{type}/{os.path.basename(image_file)}', "PNG")
+
+        path = f'graphics/units_dynamic/{type}/{os.path.basename(image_file)}'
+        image_out.save(path, "PNG")
+        paths.append(path) 
+    return paths
 
 def import_all_units():
     print('Importing A.I. generated units...')
-    import_unit('air')
-    import_unit('ground')
+    air_paths = import_unit('air')
+    ground_paths = import_unit('ground')
     print('done.')
+    return air_paths + ground_paths
+    
 
 if __name__ == '__main__':
     if len(argv) == 3:

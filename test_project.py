@@ -1,6 +1,8 @@
-from project import Game
+from project import Game, run_import_unit, run_import_units, run_preview_unit
 from player import Player
 from enemy import Enemy
+from pytest import raises
+import replicate
 import config 
 import os
 import pygame
@@ -38,6 +40,19 @@ def test_enemy_init():
 
     enemy = Enemy('monkey','graphics/units_static/ground/1.png')
     assert enemy 
+
+def test_run_preview_unit():
+    with raises (replicate.exceptions.ReplicateError):
+        assert run_preview_unit('air')
+
+def test_run_import_unit():
+    paths = run_import_unit('ground', 1) 
+    assert os.path.exists(paths[0])
+
+def test_run_import_units():
+    paths = run_import_units() 
+    for path in paths:
+       assert os.path.exists(path)
 
 def test_save_file():
     try:
