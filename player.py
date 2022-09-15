@@ -39,6 +39,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.player_walk[self.player_walk_index]
         self.reset_start_pos()
         
+        # sound
+        self.mute_on = False
         self.jump_sound = pygame.mixer.Sound('audio/mixkit-player-jumping-in-a-video-game-2043.wav')
         self.jump_sound.set_volume(0.5)
 
@@ -49,7 +51,6 @@ class Player(pygame.sprite.Sprite):
         self.swish_sound.set_volume(0.2)
         self.swish_sound_start_time = 0
 
-        #hit sound
         self.hit_sound = pygame.mixer.Sound('audio/slash.mp3')
         self.hit_sound.set_volume(1)
         self.hit_sound_start_time = 0
@@ -99,8 +100,21 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom >= GROUND_Y:
             self.rect.bottom = GROUND_Y
 
+    def set_volume(self):
+        if self.mute_on:
+            self.jump_sound.set_volume(0)
+            self.hit_sound.set_volume(0)
+            self.death_sound.set_volume(0)
+            self.swish_sound.set_volume(0)
+        else:
+            self.jump_sound.set_volume(.5)
+            self.hit_sound.set_volume(1)
+            self.death_sound.set_volume(.5)
+            self.swish_sound.set_volume(.2)
+
+
     def animate(self):
-        now = pygame.time.get_ticks()
+        self.set_volume()
         if self.rect.bottom < GROUND_Y: 
             # jumping...
             if self.attack and self.attack > 0:

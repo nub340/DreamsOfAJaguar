@@ -27,6 +27,7 @@ class Game():
         self.start_time = 0
         pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_CROSSHAIR))
         self.game_music = None 
+        self.sound_volume = 1
         self.paused = False
 
         self.score = 0
@@ -72,15 +73,27 @@ class Game():
         self.enemy_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.enemy_timer, 1500)
 
+        # Sound Icon
+        self.sound_on_surf = pygame.transform.rotozoom(pygame.image.load('graphics/sound_on.png').convert_alpha(), 0, .3)
+        self.sound_on_rect = self.sound_on_surf.get_rect(center = (780, 15))
+        self.sound_off_surf = pygame.transform.rotozoom(pygame.image.load('graphics/sound_off.png').convert_alpha(), 0, .3)
+        self.sound_off_rect = self.sound_off_surf.get_rect(center = (780, 15))
+
     def set_game_music(self, track):
+      
+        pygame.mixer.music.set_volume(self.sound_volume)
         if track == 'intro' and self.game_music != 'intro':
+            print('sound intro')
             self.game_music = track
             pygame.mixer.music.load('audio/legend-of-narmer.mp3')
+            pygame.mixer.music.set_volume(self.sound_volume)
             pygame.mixer.music.play(-1)
         elif track == 'in_game' and self.game_music != 'in_game':
+            print('sound in_game')
             self.game_music = track
             pygame.mixer.music.load('audio/music.wav')
-            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(self.sound_volume)
+            pygame.mixer.music.play(-1)     
 
     def display_score(self):
         current_time = (int(pygame.time.get_ticks() / 1000) - self.start_time) + self.prev_score
@@ -145,6 +158,12 @@ class Game():
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+500, 0))
         self.screen.blit(self.bg_ground_surface, (self.bg_ground_offset+1000, 0))
 
+    def draw_sound_icon(self):
+        if self.sound_volume > 0:
+            self.screen.blit(self.sound_on_surf, self.sound_on_rect)
+        else:
+            self.screen.blit(self.sound_off_surf, self.sound_off_rect)
+
     def save_score(self, score, high_score, file_name = 'save.txt'):
         save_file = open(file_name, 'w')
         save_file.writelines(list([f'{score}','\n',f'{high_score}']))
@@ -179,6 +198,14 @@ class Game():
                         pygame.quit()
                         exit()
 
+                    elif event.type == pygame.MOUSEBUTTONUP:
+                        if self.sound_volume > 0 and self.sound_on_rect.collidepoint(event.pos):
+                            self.sound_volume = 0
+                            self.player.sprites()[0].mute_on = True
+                        elif self.sound_volume == 0 and self.sound_off_rect.collidepoint(event.pos):
+                            self.sound_volume = 1
+                            self.player.sprites()[0].mute_on = False
+
                 else: 
                     if event.type == pygame.KEYDOWN:
 
@@ -198,6 +225,12 @@ class Game():
 
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         self.main_screen.mouse_clicked()
+
+                    elif event.type == pygame.MOUSEBUTTONUP:
+                        if self.sound_volume > 0 and self.sound_on_rect.collidepoint(event.pos):
+                            self.sound_volume = 0
+                        elif self.sound_volume == 0 and self.sound_off_rect.collidepoint(event.pos):
+                            self.sound_volume = 1
 
             if self.game_active:
                 self.set_game_music('intro')
@@ -227,5 +260,6 @@ class Game():
                     self.main_screen = MainScreen(self.screen, self.dream_mode, self.game_font, self.game_font_large, self.tip_font, self.high_score, self.score, self.prev_score, True)
                 self.main_screen.draw()
                 
+            self.draw_sound_icon()
             pygame.display.update()
             self.clock.tick(60)
