@@ -102,7 +102,7 @@ Music and sound effects were obtained from various free gaming content websites,
 - [Asset attributions below](#ca)
 
 ## Enemy Units ##
-All enemy units in Dreams of a Jaguar are created from a single image "sprite" containing 4 frames of the same creature arranged in a 2x2 grid such that displaying them in sequence would produce an animation. Here is a hi-res example of a single enemy unit sprite containing 4 frames: 
+All enemy units in Dreams of a Jaguar are created from a single image "sprite" containing 4 frames of the same creature arranged in a 2x2 grid such that displaying them in sequence produces an animation. Here is a hi-res example of a single enemy unit sprite containing 4 frames: 
 
 <img src="stable_diffusion/init_image/air_parrot.png" alt="four frame sprite example" width="500" height="500"/>
 <br><br>
@@ -115,11 +115,17 @@ To animate the frames, the variable ```animation_index``` is used to track which
 A pygame ```mask``` is used for collision detection. Using a mask allows you to detect if any of the player's non-transparent pixels are touching any of the enemy's non-transparent pixels. Each frame uses a separate mask, as the transparent part is different in each frame.
 
 ## "Dreaming" up new units with Stable Diffusion ##
-To dynamically generate random creatures that look at least _somewhat_ realistic when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a basic grapical guideline for the output we're looking for. The images our enemy units are based on can be found in the ```/stable-diffusion/init_image``` folder. 
+To dynamically generate random creatures that look at least _somewhat_ realistic when animated, we are leveraging several techniques. Careful and tedious "prompt engineering" among the most important. We also use an ```init_image```, to provide Stable Diffusion with a basic grapical guideline for the output we're looking for. The images our enemy units are based on can be found in the ```/stable-diffusion/init_image``` folder. The 2x2 grid format seemed to produce the best results in our testing.
 
-The 2x2 animation frame-grid format was utilized as it produces the most consistent unique results while maintaining the basic animation format. Attempting to generate multiple frames for the same creature as separate requests and merging them would rarely produce a consistent sequence because, to create unique units we allow the AI to stray from the given image prompt. Perhaps there is a better way we have yet to discover. However, combining all of the frames into a single image actually works surprisingly well. That is, in conjunction with the highly curated text prompt and other settings. When all of these parameters are adjusted just right, it can produce some amazing results!
+### New Unit Generation Workflow ###
 
-## Stable Diffusion Integration ##
+```mermaid
+flowchart LR
+    A["stable_diffusion/init_image/\n + prompt"] -->|http request|B[Replicate.com] -->|response|C["stable_diffusion/air/\nstable_diffusion/ground/"] -->|load|D["Process\nvia PIL"] -->|save|E["graphics/units_dynamic/"]
+  
+```
+
+## Replicate.com Integration ##
 Initially we wanted to install and run Stable Diffusion locally along side our game so that everything was being ran locally. However, this approach presented several challenges:
 
 - Intel Mac vs M1 Mac vs PC installation & command line differences
@@ -128,7 +134,7 @@ Initially we wanted to install and run Stable Diffusion locally along side our g
 - Model speed differences on different hardware
 - Multiple forks and rapidly evolving codebase
 
-While still an intriguing idea that we will undoubtably continue to pursue, we decided it was out of scope for this project. Instead, we opted to use a readily available web API (replicate.com), which greatly simplified integration and would ensure compatibility no matter what type of computer was running it. As long as it has internet access and can run Python, you should be good to go. All you need is an API KEY from replicate.com.
+Because of all this, we opted to use a readily available web API (via replicate.com), which greatly simplified integration while ensuring compatibility no matter what type of computer was being used. As long as you can run Python, have internet access, and have an API KEY, in theory you should be good to go.
 
 #### Player Involvement ####
 With all that said, our approach is still unpredictable and can often generate undesirable results. To address this, we decided to let the player interact with Stable Diffusion on the main screen directly by allowing them to click on either a specific unit, or the player character in the center to regenerate all the units, respectfully. The player can repeat this process until they like all their units, and/or are free to explore and keep generating more just for fun! Regenerating units can take around 30 seconds to a minute, depending on internet speed and server.

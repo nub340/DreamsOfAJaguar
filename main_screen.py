@@ -95,6 +95,10 @@ class MainScreen:
             else: ground_units_x -= 40
 
     def mouse_clicked(self):
+        
+        if not self.dream_mode:
+            return
+
         mouse_pos = pygame.mouse.get_pos()
 
         if self.player_rect.collidepoint(mouse_pos) and all(value == False for value in self.bg_task_lock.values()):
@@ -121,18 +125,20 @@ class MainScreen:
                     ensure_api_key()
                     unit_no = os.path.basename(air_unit.image_path).replace('.png', '')
 
-                    def replace_air_unit():
+                    def replace_air_unit(lock_id):
                         print(f'Dreaming up new air unit', unit_no)
                         path = regenerate_unit('air', unit_no)
                         import_unit('air', unit_no)
                         self.init_units()
                         print(f'new air unit manifested:', path)
-                        self.bg_task_lock[f'a{i}'] = False
+                        self.bg_task_lock[lock_id] = False
                         pygame.mixer.Sound('audio/mixkit-magic-sweep-game-trophy-257.wav').play()
 
-                    if not self.bg_task_lock[f'a{i}']:
-                        self.bg_task_lock[f'a{i}'] = True
-                        Thread(target=replace_air_unit, name=f'aworker{i}').start()
+                    lock_id = f'a{i}'
+                    if not self.bg_task_lock[lock_id]:
+                        self.bg_task_lock[lock_id] = True
+                        print('locking', lock_id)
+                        Thread(target=replace_air_unit, name=f'aworker{i}', args=[lock_id]).start()
                     break
                     
             for i, ground_unit in enumerate(self.ground_units_group):
@@ -142,23 +148,24 @@ class MainScreen:
                     unit_no = os.path.basename(ground_unit.image_path).replace('.png', '')
                     
                     # use closure to access state
-                    def replace_ground_unit():
+                    def replace_ground_unit(lock_id):
                         print(f'Dreaming up new ground unit', unit_no)
                         path = regenerate_unit('ground', unit_no)
                         import_unit('ground', unit_no)
                         self.init_units()
                         print(f'new ground unit manifested', path)
-                        self.bg_task_lock[f'g{i}'] = False
+                        self.bg_task_lock[lock_id] = False
                         pygame.mixer.Sound('audio/mixkit-magic-sweep-game-trophy-257.wav').play()
 
-                    if not self.bg_task_lock[f'g{i}']:
-                        self.bg_task_lock[f'g{i}'] = True
-                        Thread(target=replace_ground_unit, name=f'gworker{i}').start()
+                    lock_id = f'g{i}'
+                    if not self.bg_task_lock[lock_id]:
+                        self.bg_task_lock[lock_id] = True
+                        Thread(target=replace_ground_unit, name=f'gworker{i}', args=[lock_id]).start()
                     
                     break
 
     def draw(self):
-        
+        #print(self.bg_task_lock)
         mouse_pos = pygame.mouse.get_pos()
         
         # background  
