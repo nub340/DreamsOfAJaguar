@@ -95,6 +95,10 @@ class MainScreen:
             else: ground_units_x -= 40
 
     def mouse_clicked(self):
+        
+        if not self.dream_mode:
+            return
+
         mouse_pos = pygame.mouse.get_pos()
 
         if self.player_rect.collidepoint(mouse_pos) and all(value == False for value in self.bg_task_lock.values()):
