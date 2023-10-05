@@ -47,7 +47,7 @@ STABLE_DIFFUSION_GSCALE=16
 
 # ===========================
 
-model = replicate.models.get("stability-ai/stable-diffusion")
+# model = replicate.models.get("stability-ai/stable-diffusion")
 unit_requests = []
 
 def get_creature_requests():
